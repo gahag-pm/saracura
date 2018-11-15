@@ -1,4 +1,4 @@
-package br.dcc.ufmg.pm.saracura.clinic;
+package br.ufmg.dcc.pm.saracura.clinic;
 
 
 public enum Specialty {

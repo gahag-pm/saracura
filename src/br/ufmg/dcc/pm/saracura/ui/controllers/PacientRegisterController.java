@@ -1,8 +1,8 @@
-package br.dcc.ufmg.pm.saracura.ui.views;
+package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import javax.swing.JFrame;
 
 
-public class PacientRegisterWindow extends JFrame {
+public class PacientRegisterController extends JFrame {
   
 }

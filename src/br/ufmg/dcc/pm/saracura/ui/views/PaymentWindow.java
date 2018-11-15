@@ -1,4 +1,4 @@
-package br.dcc.ufmg.pm.saracura.ui.views;
+package br.ufmg.dcc.pm.saracura.ui.views;
 
 import javax.swing.JFrame;
 

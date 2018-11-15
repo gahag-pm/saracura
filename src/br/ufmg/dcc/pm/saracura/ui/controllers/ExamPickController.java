@@ -1,8 +1,8 @@
-package br.dcc.ufmg.pm.saracura.ui.views;
+package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import javax.swing.JFrame;
 
 
-public class ExamPickWindow extends JFrame {
+public class ExamPickController extends JFrame {
   
 }
