@@ -2,5 +2,11 @@ package br.ufmg.dcc.pm.saracura.clinic;
 
 
 public enum Exam {
-  // Tomography, etc...
+	COMPUTERIZED_TOMOGRAPHY,
+	MAGNETIC_RESONANCE,
+	RADIOGRAPHY,
+	MAMMOGRAPHY,
+	NUCLEAR_MEDICINE,
+	ULTRASOUND;
+	
 }
