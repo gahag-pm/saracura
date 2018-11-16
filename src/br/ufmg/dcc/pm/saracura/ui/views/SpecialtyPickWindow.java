@@ -55,7 +55,7 @@ public class SpecialtyPickWindow extends JFrame {
 
 	    this.pack();
 	    this.setLocationRelativeTo(null);
-	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	  }
 
 }
