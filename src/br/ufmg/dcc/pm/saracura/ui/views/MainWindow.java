@@ -54,14 +54,13 @@ public class MainWindow extends JFrame {
     Tpanel.add(Box.createRigidArea(new Dimension(10,10)));
 		Tpanel.add(examAppointment);
     Tpanel.add(Box.createRigidArea(new Dimension(10,10)));
-    Tpanel.add(update);				   
+    Tpanel.add(update);
 		this.add(Tpanel);
     
 		getRootPane().setDefaultButton(scheduleAppointment);
 		this.setResizable(false);
-    this.validate();
     this.rootPane.setOpaque(true);
-		this.pack();				
+		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
