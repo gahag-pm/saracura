@@ -1,5 +1,10 @@
 package br.ufmg.dcc.pm.saracura.clinic;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 public enum Specialty {
   ACUPUNCTURE,
@@ -57,4 +62,78 @@ public enum Specialty {
   THORACIC_SURGERY,
   UROLOGY,
   VASCULAR_SURGERY;
+	
+	public static final Map<Specialty, String> tMap;
+	public static final Map<String, Specialty> vMap;
+	public static final Map<Specialty, String> sorted;
+
+	  static {
+	    tMap = new HashMap<Specialty, String>() {{
+	    	put(ACUPUNCTURE,"ACUPUNTURA");
+	    	put(ANGIOLOGY,"ANGIOLOGIA");
+	    	put(HEAD_AND_NECK_SURGERY,"CIRURGIA DE CABEÇA E PESCOÇO");
+	    	put(GENERAL_SURGERY,"CIRURGIA GERAL");
+	    	put(PEDIATRIC_SURGERY,"CIRURGIA PEDIÁTRICA");
+	    	put(PLASTIC_SURGERY,"CIRURGIA PLÁSTICA");
+	    	put(INTERNAL_MEDICINE,"CLÍNICA MÉDICA");
+	    	put(DERMATOLOGY,"DERMATOLOGIA");
+	    	put(ENDOSCOPY,"ENDOSCOPIA");
+	    	put(GYNECOLOGY_AND_OBSTETRICS,"GINECOLOGIA E OBSTETRÍCIA");
+	    	put(INFECTOLOGY,"INFECTOLOGIA");
+	    	put(MASTOLOGY,"MASTOLOGIA");
+	    	put(FAMILY_AND_COMMUNITY_MEDICINE,"MEDICINA DE FAMÍLIA E COMUNIDADE");
+	    	put(OCCUPATIONAL_MEDICINE,"MEDICINA DO TRABALHO");
+	    	put(MEDICINE_OF_TRAFFIC,"MEDICINA DO TRÁFEGO");
+	    	put(SPORTS_MEDICINE,"MEDICINA ESPORTIVA");
+	    	put(PHYSICAL_MEDICINE,"MEDICINA FÍSICA E REABILITAÇÃO");
+	    	put(NEUROLOGY,"NEUROLOGIA");
+	    	put(NUTROLOGY,"NUTROLOGIA");
+	    	put(OPHTHALMOLOGY,"OFTALMOLOGIA");
+	    	put(OTORHINOLARYNGOLOGY,"OTORRINOLARINGOLOGIA");
+	    	put(PATHOLOGY,"PATOLOGIA");
+	    	put(UROLOGY,"UROLOGIA");
+	    	put(ALLERGY_AND_IMMUNOLOGY,"ALERGIA E IMUNOLOGIA");
+	    	put(ANESTHESIOLOGY,"ANESTESIOLOGIA");
+	    	put(CARDIOLOGY,"CARDIOLOGIA");
+	    	put(CARDIOVASCULAR_SURGERY,"CIRURGIA CARDIOVASCULAR");
+	    	put(HAND_SURGERY,"CIRURGIA DA MÃO");
+	    	put(DIGESTIVE_SYSTEM_SURGERY,"CIRURGIA DO APARELHO DIGESTIVO");
+	    	put(THORACIC_SURGERY,"CIRURGIA TORÁCICA");
+	    	put(VASCULAR_SURGERY,"CIRURGIA VASCULAR");
+	    	put(COLOPROCTOLOGY,"COLOPROCTOLOGIA");
+	    	put(ENDOCRINOLOGY_AND_METABOLISM,"ENDOCRINOLOGIA E METABOLOGIA");
+	    	put(GASTROENTEROLOGY,"GASTROENTEROLOGIA");
+	    	put(MEDICAL_GENETICS,"GENÉTICA MÉDICA");
+	    	put(GERIATRICS,"GERIATRIA");
+	    	put(HEMATOLOGY_AND_HEMOTHERAPY,"HEMATOLOGIA E HEMOTERAPIA");
+	    	put(HOMEOPATHY,"HOMEOPATIA");
+	    	put(EMERGENCY_MEDICINE,"MEDICINA DE EMERGÊNCIA");
+	    	put(LEGAL_MEDICINE,"MEDICINA FORENSE");
+	    	put(INTENSIVE_MEDICINE,"MEDICINA INTENSIVA");
+	    	put(NUCLEAR_MEDICINE,"MEDICINA NUCLEAR");
+	    	put(PREVENTIVE_AND_SOCIAL_MEDICINE,"MEDICINA PREVENTIVA E SOCIAL");
+	    	put(NEPHROLOGY,"NEFROLOGIA");
+	    	put(NEUROSURGERY,"NEUROCIRURGIA");
+	    	put(OBSTETRICS,"OBSTETRÍCIA");
+	    	put(ONCOLOGY,"ONCOLOGIA");
+	    	put(ORTHOPEDICS_AND_TRAUMATOLOGY,"ORTOPEDIA E TRAUMATOLOGIA");
+	    	put(CLINICAL_PATHOLOGY,"PATOLOGIA CLÍNICA");
+	    	put(PEDIATRICS,"PEDIATRIA");
+	    	put(PNEUMOLOGY,"PNEUMOLOGIA");
+	    	put(PSYCHIATRY,"PSIQUIATRIA");
+	    	put(RADIOLOGY_AND_DIAGNOSTIC_IMAGING,"RADIOLOGIA E DIAGNÓSTICO POR IMAGEM");
+	    	put(RADIOTHERAPY,"RADIOTERAPIA");
+	    	put(RHEUMATOLOGY,"REUMATOLOGIA");
+	    }};
+	    
+	    sorted = tMap.entrySet()
+	    		.stream()
+	    		.sorted(Map.Entry.comparingByValue())
+	    		.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
+
+
+	    vMap = sorted.entrySet()
+	                     .stream()
+	                     .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+	  }
 }
