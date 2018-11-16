@@ -8,5 +8,4 @@ public enum Exam {
 	MAMMOGRAPHY,
 	NUCLEAR_MEDICINE,
 	ULTRASOUND;
-	
 }

@@ -1,7 +1,7 @@
 package br.ufmg.dcc.pm.saracura.clinic;
 
 
-public class Pacient {
+public class Patient {
   // NIN (National Insurance Number)
   // Name
 }
