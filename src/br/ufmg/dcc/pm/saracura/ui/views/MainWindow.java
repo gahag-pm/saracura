@@ -50,18 +50,18 @@ public class MainWindow extends JFrame {
     examAppointment.setAlignmentX(Component.CENTER_ALIGNMENT);    
     update.setAlignmentX(Component.CENTER_ALIGNMENT);    
 
-		Tpanel.add(scheduleAppointment);
+    Tpanel.add(scheduleAppointment);
     Tpanel.add(Box.createRigidArea(new Dimension(10,10)));
-		Tpanel.add(examAppointment);
+    Tpanel.add(examAppointment);
     Tpanel.add(Box.createRigidArea(new Dimension(10,10)));
     Tpanel.add(update);
-		this.add(Tpanel);
+    this.add(Tpanel);
     
-		getRootPane().setDefaultButton(scheduleAppointment);
-		this.setResizable(false);
+    getRootPane().setDefaultButton(scheduleAppointment);
+    this.setResizable(false);
     this.rootPane.setOpaque(true);
-		this.pack();
-		this.setLocationRelativeTo(null);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    this.pack();
+    this.setLocationRelativeTo(null);
+    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 }

@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 
 public enum Exam {
   COMPUTERIZED_TOMOGRAPHY,
-	MAGNETIC_RESONANCE,
-	RADIOGRAPHY,
-	MAMMOGRAPHY,
-	NUCLEAR_MEDICINE,
-	ULTRASOUND;
+  MAGNETIC_RESONANCE,
+  RADIOGRAPHY,
+  MAMMOGRAPHY,
+  NUCLEAR_MEDICINE,
+  ULTRASOUND;
 
   public static Map<Exam, String> getMap(){
     Map<String, Exam> map = new HashMap<String, Exam>();

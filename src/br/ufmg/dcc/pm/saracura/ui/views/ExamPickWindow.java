@@ -41,8 +41,8 @@ public class ExamPickWindow extends JFrame {
     this.add(pane);
     this.pack();
     this.rootPane.setOpaque(true);
-		this.setLocationRelativeTo(null);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    this.setLocationRelativeTo(null);
+    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
   
 }
