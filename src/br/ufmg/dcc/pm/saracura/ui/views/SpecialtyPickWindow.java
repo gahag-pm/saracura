@@ -2,6 +2,7 @@ package br.ufmg.dcc.pm.saracura.ui.views;
 
 import java.awt.Component;
 import java.awt.Dimension;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -16,46 +17,40 @@ import br.ufmg.dcc.pm.saracura.clinic.Specialty;
 
 
 public class SpecialtyPickWindow extends JFrame {
-	protected final Dimension dButton = new Dimension(250, 75);
+  protected final Dimension dButton = new Dimension(250, 75);
 
-	  protected final JButton select = new JButton("Selecionar") {{
-	    setSize(dButton);
-	    setMaximumSize(dButton);
-	    setAlignmentX(Component.CENTER_ALIGNMENT);
-	  }};
+  protected final JButton select = new JButton("Selecionar") {{
+    setSize(dButton);
+    setMaximumSize(dButton);
+    setAlignmentX(Component.CENTER_ALIGNMENT);
+  }};
 
-	  protected JList <String> list;
-	  protected JScrollPane listScroller;
-	  
-	  protected void setList() {
-		  this.list = new JList<String>(Specialty.sorted.values().toArray(new String[0]));
-		  list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		  list.setSelectedIndex(0);
-		  list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		  list.setVisibleRowCount(-1);
-		  		  
-	  }
-	  
-	  protected void setScroller() {
-		  this.listScroller = new JScrollPane(this.list);
-		  this.listScroller.setPreferredSize(new Dimension(250, 75));
-	  }
+  protected JList <String> list = new JList<String>() {{
+    setListData(Specialty.textMap.values().stream().sorted().toArray(String[]::new));
+    setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    setSelectedIndex(0);
+  }};
 
-	  public SpecialtyPickWindow(){
-	    super("Especialidades médicas");
-	    setList();
-	    setScroller();
-	    JPanel pane = new JPanel();
-	    pane.setLayout(new BoxLayout(pane, BoxLayout.PAGE_AXIS));
-	    pane.setBorder(new EmptyBorder(20, 50, 20, 50));
-	    pane.add(listScroller);
-	    pane.add(Box.createRigidArea(new Dimension(10,10)));
-	    pane.add(select);
-	    this.add(pane);
+  protected JScrollPane listScroller = new JScrollPane(this.list);
 
-	    this.pack();
-	    this.setLocationRelativeTo(null);
-	    this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-	  }
+
+
+  public SpecialtyPickWindow(){
+    super("Especialidades médicas");
+
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+    panel.setBorder(new EmptyBorder(10, 20, 15, 20));
+    panel.add(listScroller);
+    panel.add(Box.createRigidArea(new Dimension(10, 15)));
+    panel.add(select);
+    this.add(panel);
+
+    this.pack();
+    this.setSize(new Dimension(400, 500));
+    this.setResizable(false);
+    this.setLocationRelativeTo(null);
+    this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+  }
 
 }
