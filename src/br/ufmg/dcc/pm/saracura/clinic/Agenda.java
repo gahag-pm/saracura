@@ -2,14 +2,16 @@ package br.ufmg.dcc.pm.saracura.clinic;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.NavigableSet;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 
@@ -25,7 +27,7 @@ public class Agenda<
   /**
    * The set of scheduled appointments.
    */
-  protected final SortedSet<Appointment<Operator, Cooperator>> agenda;
+  protected final NavigableSet<Appointment<Operator, Cooperator>> agenda;
 
   /**
    * The associated operator.
@@ -96,7 +98,7 @@ public class Agenda<
     this.dayDuration = dayDuration;
     this.workDays = Collections.unmodifiableSet(new HashSet<DayOfWeek>(workDays));
     this.agenda = new TreeSet<Appointment<Operator, Cooperator>>(
-      (a1, a2) -> a1.time.compareTo(a2.time)
+      Comparator.comparing(a -> a.time)
     );
   }
 
@@ -199,5 +201,23 @@ public class Agenda<
       throw new IllegalArgumentException("cooperator mustn't be null");
 
     this.schedule(cooperator, true, dateTime, patient, description);
+  }
+
+
+  /**
+   * Get a read-only view of the appointments in the given time interval.
+   * @param begin the beggining date of the interval
+   * @param end the end date of the interval
+   */
+  public NavigableSet<Appointment<Operator, Cooperator>> frameView(
+    LocalDate begin,
+    LocalDate end
+  ) {
+    var _begin = Appointment.<Operator, Cooperator>mock(begin.atStartOfDay());
+    var _end = Appointment.<Operator, Cooperator>mock(end.plusDays(1).atStartOfDay());
+    
+    return Collections.unmodifiableNavigableSet(
+      this.agenda.subSet(_begin, true, _end, false)
+    );
   }
 }

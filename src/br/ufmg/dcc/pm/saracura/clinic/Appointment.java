@@ -32,6 +32,22 @@ public class Appointment<Operator, Cooperator> {
 
 
   /**
+   * Create an mocked appointment object.
+   * @param time the time of the appointment, mustn't be null
+   */
+  protected Appointment(LocalDateTime time) {
+    if (time == null)
+      throw new IllegalArgumentException("time mustn't be null");
+
+    this.operator = null;
+    this.cooperator = null;
+    this.patient = null;
+    this.time = time;
+    this.description = null;
+  }
+
+
+  /**
    * Create an appointment object.
    * @param operator    the related operator, mustn't be null
    * @param cooperator  the related cooperator, possibly null
@@ -64,5 +80,16 @@ public class Appointment<Operator, Cooperator> {
     this.patient = patient;
     this.time = time;
     this.description = description;
+  }
+
+
+  /**
+   * Create an mocked appointment object.
+   * @param time the time of the appointment, mustn't be null
+   */
+  public static <Operator, Cooperator> Appointment<Operator, Cooperator> mock(
+    LocalDateTime time
+  ) {
+    return new Appointment<Operator, Cooperator>(time);
   }
 }
