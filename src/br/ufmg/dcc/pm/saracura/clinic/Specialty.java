@@ -1,6 +1,6 @@
 package br.ufmg.dcc.pm.saracura.clinic;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -66,7 +66,7 @@ public enum Specialty {
   public static final Map<String, Specialty> valueMap;
 
   static {
-    textMap = new HashMap<Specialty, String>() {{
+    textMap = new LinkedHashMap<Specialty, String>() {{
       put(ACUPUNCTURE, "Acupuntura");
       put(ANGIOLOGY, "Angiologia");
       put(HEAD_AND_NECK_SURGERY, "Cirurgia de cabeça e pescoço");

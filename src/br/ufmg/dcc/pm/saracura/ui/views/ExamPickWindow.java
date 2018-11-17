@@ -26,7 +26,7 @@ public class ExamPickWindow extends JFrame {
   }};
 
   protected JList<String> list = new JList<String>() {{
-    setListData(Exam.textMap.values().stream().sorted().toArray(String[]::new));
+    setListData(Exam.textMap.values().stream().toArray(String[]::new));
     setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     setSelectedIndex(0);
   }};

@@ -1,6 +1,6 @@
 package br.ufmg.dcc.pm.saracura.clinic;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -17,12 +17,12 @@ public enum Exam {
   public static final Map<String, Exam> valueMap;
 
   static {
-    textMap = new HashMap<Exam, String>() {{
-      put(COMPUTERIZED_TOMOGRAPHY, "Tomografia computarizada");
-      put(MAGNETIC_RESONANCE, "Ressonância magnética");
-      put(RADIOGRAPHY, "Radiografia");
+    textMap = new LinkedHashMap<Exam, String>() {{
       put(MAMMOGRAPHY, "Mamografia");
       put(NUCLEAR_MEDICINE, "Medicina nuclear");
+      put(RADIOGRAPHY, "Radiografia");
+      put(MAGNETIC_RESONANCE, "Ressonância magnética");
+      put(COMPUTERIZED_TOMOGRAPHY, "Tomografia computarizada");
       put(ULTRASOUND, "Ultrassom");
     }};
 
