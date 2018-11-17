@@ -18,12 +18,12 @@ public enum Exam {
 
   static {
     textMap = new HashMap<Exam, String>() {{
-      put(COMPUTERIZED_TOMOGRAPHY, "TOMOGRAFIA COMPUTARIZADA");
-      put(MAGNETIC_RESONANCE, "RESSONÂNCIA MAGNÉTICA");
-      put(RADIOGRAPHY, "RADIOGRAFIA");
-      put(MAMMOGRAPHY, "MAMOGRAFIA");
-      put(NUCLEAR_MEDICINE, "MEDICINA NUCLEAR");
-      put(ULTRASOUND, "ULTRASSOM");
+      put(COMPUTERIZED_TOMOGRAPHY, "Tomografia computarizada");
+      put(MAGNETIC_RESONANCE, "Ressonância magnética");
+      put(RADIOGRAPHY, "Radiografia");
+      put(MAMMOGRAPHY, "Mamografia");
+      put(NUCLEAR_MEDICINE, "Medicina nuclear");
+      put(ULTRASOUND, "Ultrassom");
     }};
 
     valueMap = textMap.entrySet()
