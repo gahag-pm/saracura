@@ -12,30 +12,43 @@ import javax.swing.border.EmptyBorder;
 
 
 public class MainWindow extends JFrame {
-  protected final Dimension dButton = new Dimension(250, 75);
+  protected final Dimension buttonDimension = new Dimension(250, 75);
 
-  protected JButton examAppointment = new JButton("Agendar Exame de Imagem") {{
-    setSize(dButton);
-    setMaximumSize(dButton);
+  protected JButton scheduleAppointmentButton = new JButton("Marcar Consulta") {{
+    setSize(buttonDimension);
+    setMaximumSize(buttonDimension);
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
 
-  protected JButton scheduleAppointment = new JButton("Marcar Consulta") {{
-    setSize(dButton);
-    setMaximumSize(dButton);
+  protected JButton scheduleExamButton = new JButton("Agendar Exame de Imagem") {{
+    setSize(buttonDimension);
+    setMaximumSize(buttonDimension);
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
 
-  protected JButton update = new JButton("Atualizar Cadastro") {{
-    setSize(dButton);
-    setMaximumSize(dButton);
+  protected JButton patientRegisterButton = new JButton("Adicionar Paciente") {{
+    setSize(buttonDimension);
+    setMaximumSize(buttonDimension);
+    setAlignmentX(Component.CENTER_ALIGNMENT);
+  }};
+
+  protected JButton doctorRegisterButton = new JButton("Adicionar Médico") {{
+    setSize(buttonDimension);
+    setMaximumSize(buttonDimension);
+    setAlignmentX(Component.CENTER_ALIGNMENT);
+  }};
+
+  protected JButton equipmentRegisterButton = new JButton("Adicionar equipamento") {{
+    setSize(buttonDimension);
+    setMaximumSize(buttonDimension);
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
 
 
 
   /**
-   * Creates main window.
+   * Creates a main window.
+   * It is unresizable, exit on close, positioned at screen center.
    */
   public MainWindow() {
     super("SaraCura");
@@ -43,18 +56,59 @@ public class MainWindow extends JFrame {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     panel.setBorder(new EmptyBorder(20, 50, 20, 50));
-    panel.add(scheduleAppointment);
+    panel.add(this.scheduleAppointmentButton);
     panel.add(Box.createRigidArea(new Dimension(10,10)));
-    panel.add(examAppointment);
+    panel.add(this.scheduleExamButton);
     panel.add(Box.createRigidArea(new Dimension(10,10)));
-    panel.add(update);
+    panel.add(this.patientRegisterButton);
+    panel.add(Box.createRigidArea(new Dimension(10,10)));
+    panel.add(this.doctorRegisterButton);
+    panel.add(Box.createRigidArea(new Dimension(10,10)));
+    panel.add(this.equipmentRegisterButton);
     this.add(panel);
 
-    this.getRootPane().setDefaultButton(scheduleAppointment);
+    this.getRootPane().setDefaultButton(this.scheduleAppointmentButton);
     this.setResizable(false);
     this.rootPane.setOpaque(true);
     this.pack();
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  }
+
+
+
+  /**
+   * Add an action to the schedule appointment button.
+   */
+  public void addAppointmentAction(Runnable action) {
+    this.scheduleAppointmentButton.addActionListener(e -> action.run());
+  }
+
+  /**
+   * Add an action to the schedule exam button.
+   */
+  public void addExamAction(Runnable action) {
+    this.scheduleExamButton.addActionListener(e -> action.run());
+  }
+
+  /**
+   * Add an action to the register patient button.
+   */
+  public void addPatientRegisterAction(Runnable action) {
+    this.patientRegisterButton.addActionListener(e -> action.run());
+  }
+
+  /**
+   * Add an action to the register doctor button.
+   */
+  public void addDoctorRegisterAction(Runnable action) {
+    this.doctorRegisterButton.addActionListener(e -> action.run());
+  }
+
+  /**
+   * Add an action to the register equipment button.
+   */
+  public void addEquipmentRegisterAction(Runnable action) {
+    this.equipmentRegisterButton.addActionListener(e -> action.run());
   }
 }

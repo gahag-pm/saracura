@@ -1,8 +1,10 @@
 package br.ufmg.dcc.pm.saracura.ui.controllers;
 
-import javax.swing.JFrame;
+import java.awt.Window;
 
 
-public class PaymentController extends JFrame {
-  
+public class PaymentController implements Controller {
+  public void show(Window parent) {
+
+  }
 }

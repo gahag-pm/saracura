@@ -16,22 +16,22 @@ import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.privatejgoodies.forms.factories.CC;
 
 
-public class CalendarWindow extends JFrame {
-  protected final Dimension dButton = new Dimension(250, 75);
+public class DatePickWindow extends JFrame {
+  protected final Dimension buttonDimension = new Dimension(250, 75);
 
   protected JButton confirm = new JButton("Confirmar") {{
-    setSize(dButton);
-    setMaximumSize(dButton);
+    setSize(buttonDimension);
+    setMaximumSize(buttonDimension);
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
 
 
 
   /**
-   * Creates a CalendarWindow. It is unresizable, hide on close, positioned at screen
-   * center.
+   * Creates a CalendarWindow.
+   * It is unresizable, hide on close, positioned at screen center.
    */
-  public CalendarWindow() {
+  public DatePickWindow() {
     super("Calendário");
 
     JPanel panel = new JPanel();
