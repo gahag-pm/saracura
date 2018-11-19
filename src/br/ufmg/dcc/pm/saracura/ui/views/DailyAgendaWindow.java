@@ -4,72 +4,62 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import br.ufmg.dcc.pm.saracura.clinic.DayCalendar;
-import br.ufmg.dcc.pm.saracura.util.ui.CalendarEvent;
+import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
+import br.ufmg.dcc.pm.saracura.ui.controls.agenda.DayAgenda;
+
 
 public class DailyAgendaWindow extends JFrame {
-    
-    private ArrayList<CalendarEvent> events;
-    private DayCalendar dayCalendar;
-    private JButton goToTodayBtn;
-    private JButton nextDayBtn;
-    private JButton prevDayBtn;
-    private JButton goBack;
-    private JPanel weekControls;
-    
-    
-    public DailyAgendaWindow(String operator, ArrayList<CalendarEvent> events) {
-        super("Agenda diária de " + operator);
-        this.events = events;
-        this.dayCalendar = new DayCalendar(this.events);
-        this.weekControls = new JPanel(new FlowLayout());
-        createButtons();
-        setButtonEvents();
-        addButtons();
-        addContainers();
-        this.setSize(1000, 900);
-        this.setLocationRelativeTo(null);
-        //this.setVisible(true);
-        this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        
-    }
-    
-    private void createButtons() {
-        this.goToTodayBtn = new JButton("Hoje");
-        this.nextDayBtn = new JButton(">");
-        this.prevDayBtn = new JButton("<");
-        this.goBack = new JButton("Voltar");
-    }
-    
-    private void setButtonEvents() {
+  protected List<AgendaEvent> events;
 
-        this.goToTodayBtn.addActionListener(e -> dayCalendar.goToToday());
-        this.nextDayBtn.addActionListener(e -> dayCalendar.nextDay());
-        this.prevDayBtn.addActionListener(e -> dayCalendar.prevDay());
-        this.goBack.addActionListener(e -> this.setVisible(false));
-    }
-    
-    private void addButtons() {
-        this.weekControls.add(prevDayBtn);
-        this.weekControls.add(goToTodayBtn);
-        this.weekControls.add(nextDayBtn);
-        this.weekControls.add(goBack);
-    }
-    
-    private void addContainers() {
-        this.add(weekControls, BorderLayout.NORTH);
-        this.add(dayCalendar, BorderLayout.CENTER);
+  protected DayAgenda dayAgenda;
+  protected JButton goToTodayBtn;
+  protected JButton nextDayBtn;
+  protected JButton prevDayBtn;
+  protected JPanel weekControls;
 
-    }
-    
-    public void addEvent(LocalDate date, LocalTime startTime, LocalTime endTime, String client) {
-        this.events.add(new CalendarEvent(date, startTime, endTime, client));
-    }
+
+  public DailyAgendaWindow(String owner, List<AgendaEvent> events) {
+    super("Agenda diária de " + owner);
+
+    this.events = events;
+
+    this.dayAgenda = new DayAgenda(this.events);
+    this.weekControls = new JPanel(new FlowLayout());
+
+    this.goToTodayBtn = new JButton("Hoje") {{
+      addActionListener(e -> dayAgenda.goToToday());
+    }};
+    this.nextDayBtn = new JButton(">") {{
+      addActionListener(e -> dayAgenda.nextDay());
+    }};
+    this.prevDayBtn = new JButton("<") {{
+      addActionListener(e -> dayAgenda.prevDay());
+    }};
+
+    this.weekControls.add(prevDayBtn);
+    this.weekControls.add(goToTodayBtn);
+    this.weekControls.add(nextDayBtn);
+
+    this.add(weekControls, BorderLayout.NORTH);
+    this.add(dayAgenda, BorderLayout.CENTER);
+
+
+    this.setSize(1000, 900);
+    this.setResizable(false);
+    this.setLocationRelativeTo(null);
+    this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+  }
+
+
+
+  public void addEvent(LocalDate date, LocalTime startTime, LocalTime endTime, String client) {
+    this.events.add(new AgendaEvent(date, startTime, endTime, client));
+  }
 }
