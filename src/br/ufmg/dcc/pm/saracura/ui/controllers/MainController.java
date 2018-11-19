@@ -5,18 +5,27 @@ import java.awt.Window;
 import br.ufmg.dcc.pm.saracura.ui.views.MainWindow;
 
 
-public class MainController implements Controller {
+public class MainController implements Controller<Void> {
   public MainWindow window;
 
 
 
+  /**
+   * Create a main controller.
+   * @param window                     the main window, mustn't be null
+   * @param appointmentController      the appointment controller, mustn't be null
+   * @param examController             the exam controller, mustn't be null
+   * @param patientRegisterController  the patient register controller, mustn't be null
+   * @param doctorRegisterController   the doctor register controller, mustn't be null
+   * @param equipmentRegisterControlle the equipment register controlle, mustn't be null
+   */
   public MainController(
     MainWindow window,
-    Controller appointmentController,
-    Controller examController,
-    Controller patientRegisterController,
-    Controller doctorRegisterController,
-    Controller equipmentRegisterController
+    Controller<Void> appointmentController,
+    Controller<Void> examController,
+    Controller<Void> patientRegisterController,
+    Controller<Void> doctorRegisterController,
+    Controller<Void> equipmentRegisterController
   ) {
     if (window == null)
       throw new IllegalArgumentException("window mustn't be null");
@@ -40,25 +49,26 @@ public class MainController implements Controller {
     this.window = window;
 
     this.window.addAppointmentAction(
-      () -> appointmentController.show(this.window)
+      () -> appointmentController.execute(this.window)
     );
     this.window.addExamAction(
-      () -> examController.show(this.window)
+      () -> examController.execute(this.window)
     );
     this.window.addPatientRegisterAction(
-      () -> patientRegisterController.show(this.window)
+      () -> patientRegisterController.execute(this.window)
     );
     this.window.addDoctorRegisterAction(
-      () -> doctorRegisterController.show(this.window)
+      () -> doctorRegisterController.execute(this.window)
     );
     this.window.addEquipmentRegisterAction(
-      () -> equipmentRegisterController.show(this.window)
+      () -> equipmentRegisterController.execute(this.window)
     );
   }
 
 
 
-  public void show(Window parent) {
+  public Void execute(Window parent) {
     this.window.setVisible(true);
+    return null;
   }
 }

@@ -2,36 +2,27 @@ package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import java.awt.Window;
 
-import br.ufmg.dcc.pm.saracura.ui.views.PatientRegisterWindow;
-import br.ufmg.dcc.pm.saracura.util.ui.WindowUtil;
+import br.ufmg.dcc.pm.saracura.ui.views.PatientRegisterDialog;
 
 
-public class PatientRegisterController implements Controller {
-  public PatientRegisterWindow patientRegisterWindow;
+public class PatientRegisterController implements Controller<Void> {
+  public PatientRegisterDialog patientRegisterDialog;
 
 
 
-  public PatientRegisterController(PatientRegisterWindow patientRegisterWindow) {
-    if (patientRegisterWindow == null)
-      throw new IllegalArgumentException("patientRegisterWindow mustn't be null");
+  public PatientRegisterController(PatientRegisterDialog patientRegisterDialog) {
+    if (patientRegisterDialog == null)
+      throw new IllegalArgumentException("patientRegisterDialog mustn't be null");
 
 
-    this.patientRegisterWindow = patientRegisterWindow;
+    this.patientRegisterDialog = patientRegisterDialog;
   }
 
 
 
-  public void show(Window parent) {
-    parent.setVisible(false);
-
-    this.patientRegisterWindow.addWindowListener(
-      WindowUtil.closeListener(
-        (_listener) -> {
-          parent.setVisible(true);
-          this.patientRegisterWindow.removeWindowListener(_listener);
-        }
-      )
-    );
-    this.patientRegisterWindow.setVisible(true);
+  public Void execute(Window parent) {
+    // TODO.
+    this.patientRegisterDialog.setVisible(true);
+    return null;
   }
 }

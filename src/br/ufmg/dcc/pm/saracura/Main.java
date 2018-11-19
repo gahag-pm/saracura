@@ -8,48 +8,27 @@ import br.ufmg.dcc.pm.saracura.ui.controllers.ExamAgendaController;
 import br.ufmg.dcc.pm.saracura.ui.controllers.ExamController;
 import br.ufmg.dcc.pm.saracura.ui.controllers.MainController;
 import br.ufmg.dcc.pm.saracura.ui.controllers.PatientRegisterController;
-import br.ufmg.dcc.pm.saracura.ui.views.DatePickWindow;
-import br.ufmg.dcc.pm.saracura.ui.views.DoctorPickWindow;
-import br.ufmg.dcc.pm.saracura.ui.views.DoctorRegisterWindow;
-import br.ufmg.dcc.pm.saracura.ui.views.EquipmentRegisterWindow;
-import br.ufmg.dcc.pm.saracura.ui.views.ExamPickWindow;
+import br.ufmg.dcc.pm.saracura.ui.views.DoctorRegisterDialog;
+import br.ufmg.dcc.pm.saracura.ui.views.EquipmentRegisterDialog;
 import br.ufmg.dcc.pm.saracura.ui.views.MainWindow;
-import br.ufmg.dcc.pm.saracura.ui.views.PatientPickWindow;
-import br.ufmg.dcc.pm.saracura.ui.views.PatientRegisterWindow;
-import br.ufmg.dcc.pm.saracura.ui.views.SpecialtyPickWindow;
+import br.ufmg.dcc.pm.saracura.ui.views.PatientRegisterDialog;
 
 
 public class Main {
   public static void main(String[] args) {
     var mainWindow = new MainWindow();
-    var patientRegisterWindow = new PatientRegisterWindow();
-    var doctorRegisterWindow = new DoctorRegisterWindow();
-    var equipmentRegisterWindow = new EquipmentRegisterWindow();
-    var patientPickWindow = new PatientPickWindow();
-    var specialtyPickWindow = new SpecialtyPickWindow();
-    var examPickWindow = new ExamPickWindow();
-    var doctorPickWindow = new DoctorPickWindow();
-    var datePickWindow = new DatePickWindow();
+    var patientRegisterDialog = new PatientRegisterDialog();
+    var doctorRegisterDialog = new DoctorRegisterDialog();
+    var equipmentRegisterDialog = new EquipmentRegisterDialog();
 
 
     var agendaController = new AgendaController();
     var examAgendaController = new ExamAgendaController();
-    var appointmentController = new AppointmentController(
-      patientPickWindow,
-      specialtyPickWindow,
-      doctorPickWindow,
-      datePickWindow,
-      agendaController
-    );
-    var examController = new ExamController(
-      patientPickWindow,
-      examPickWindow,
-      datePickWindow,
-      examAgendaController
-    );
-    var patientRegisterController = new PatientRegisterController(patientRegisterWindow);
-    var doctorRegisterController = new DoctorRegisterController(doctorRegisterWindow);
-    var equipmentRegisterController = new EquipmentRegisterController(equipmentRegisterWindow);
+    var appointmentController = new AppointmentController(agendaController);
+    var examController = new ExamController(examAgendaController);
+    var patientRegisterController = new PatientRegisterController(patientRegisterDialog);
+    var doctorRegisterController = new DoctorRegisterController(doctorRegisterDialog);
+    var equipmentRegisterController = new EquipmentRegisterController(equipmentRegisterDialog);
     var mainController = new MainController(
       mainWindow,
       appointmentController,
@@ -58,6 +37,8 @@ public class Main {
       doctorRegisterController,
       equipmentRegisterController
     );
-    mainController.show(null);
+
+
+    mainController.execute(null);
   }
 }

@@ -2,58 +2,31 @@ package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import java.awt.Window;
 
-import br.ufmg.dcc.pm.saracura.ui.views.DatePickWindow;
-import br.ufmg.dcc.pm.saracura.ui.views.ExamPickWindow;
-import br.ufmg.dcc.pm.saracura.ui.views.PatientPickWindow;
-import br.ufmg.dcc.pm.saracura.util.ui.WindowUtil;
+import br.ufmg.dcc.pm.saracura.clinic.Exam;
+import br.ufmg.dcc.pm.saracura.ui.views.ListPickDialog;
 
 
-public class ExamController implements Controller {
-  public PatientPickWindow patientPickWindow;
-  public ExamPickWindow examPickWindow;
-  public DatePickWindow datePickWindow;
+public class ExamController implements Controller<Void> {
+  protected final Controller<Void> examAgendaController;
 
 
 
-  public ExamController(
-    PatientPickWindow patientPickWindow,
-    ExamPickWindow examPickWindow,
-    DatePickWindow datePickWindow,
-    Controller examAgendaController
-  ) {
-    if (patientPickWindow == null)
-      throw new IllegalArgumentException("patientPickWindow mustn't be null");
-
-    if (examPickWindow == null)
-      throw new IllegalArgumentException("examPickWindow mustn't be null");
-
-    if (datePickWindow == null)
-      throw new IllegalArgumentException("datePickWindow mustn't be null");
-
+  public ExamController(Controller<Void> examAgendaController) {
     if (examAgendaController == null)
       throw new IllegalArgumentException("examAgendaController mustn't be null");
 
 
-    this.patientPickWindow = patientPickWindow;
-    this.examPickWindow = examPickWindow;
-    this.datePickWindow = datePickWindow;
-
-    // TODO: examAgenda controller
+    this.examAgendaController = examAgendaController;
   }
 
 
 
-  public void show(Window parent) {
-    parent.setVisible(false);
+  public Void execute(Window parent) {
+    // TODO.
+    var listPickDialog = new ListPickDialog(parent);
+    listPickDialog.setItems(Exam.textMap.values());
+    listPickDialog.setVisible(true);
 
-    this.patientPickWindow.addWindowListener(
-      WindowUtil.closeListener(
-        (_listener) -> {
-          parent.setVisible(true);
-          this.patientPickWindow.removeWindowListener(_listener);
-        }
-      )
-    );
-    this.patientPickWindow.setVisible(true);
+    return null;
   }
 }

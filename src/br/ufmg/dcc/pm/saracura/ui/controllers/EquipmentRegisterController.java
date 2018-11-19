@@ -2,36 +2,27 @@ package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import java.awt.Window;
 
-import br.ufmg.dcc.pm.saracura.ui.views.EquipmentRegisterWindow;
-import br.ufmg.dcc.pm.saracura.util.ui.WindowUtil;
+import br.ufmg.dcc.pm.saracura.ui.views.EquipmentRegisterDialog;
 
 
-public class EquipmentRegisterController implements Controller {
-  public EquipmentRegisterWindow equipmentRegisterWindow;
+public class EquipmentRegisterController implements Controller<Void> {
+  public EquipmentRegisterDialog equipmentRegisterDialog;
 
 
 
-  public EquipmentRegisterController(EquipmentRegisterWindow equipmentRegisterWindow) {
-    if (equipmentRegisterWindow == null)
-      throw new IllegalArgumentException("equipmentRegisterWindow mustn't be null");
+  public EquipmentRegisterController(EquipmentRegisterDialog equipmentRegisterDialog) {
+    if (equipmentRegisterDialog == null)
+      throw new IllegalArgumentException("equipmentRegisterDialog mustn't be null");
 
 
-    this.equipmentRegisterWindow = equipmentRegisterWindow;
+    this.equipmentRegisterDialog = equipmentRegisterDialog;
   }
 
 
 
-  public void show(Window parent) {
-    parent.setVisible(false);
-
-    this.equipmentRegisterWindow.addWindowListener(
-      WindowUtil.closeListener(
-        (_listener) -> {
-          parent.setVisible(true);
-          this.equipmentRegisterWindow.removeWindowListener(_listener);
-        }
-      )
-    );
-    this.equipmentRegisterWindow.setVisible(true);
+  public Void execute(Window parent) {
+    // TODO.
+    this.equipmentRegisterDialog.setVisible(true);
+    return null;
   }
 }

@@ -2,12 +2,13 @@ package br.ufmg.dcc.pm.saracura.ui.views;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Window;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
@@ -15,7 +16,7 @@ import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.WeekAgenda;
 
 
-public class WeeklyAgendaWindow extends JFrame {
+public class WeeklyAgendaDialog extends JDialog {
   private List<AgendaEvent> events;
 
   private WeekAgenda weekAgenda;
@@ -28,8 +29,14 @@ public class WeeklyAgendaWindow extends JFrame {
 
 
 
-  public WeeklyAgendaWindow(String owner, List<AgendaEvent> events) {
-    super("Agenda semanal de " + owner);
+  public WeeklyAgendaDialog(Window parent, String owner, List<AgendaEvent> events) {
+    super(parent, "Agenda semanal de " + owner);
+
+
+    if (events == null)
+      throw new IllegalArgumentException("events mustn't be null");
+
+
     this.events = events;
     this.weekAgenda = new WeekAgenda(this.events);
     this.weekControls = new JPanel(new FlowLayout());
@@ -63,8 +70,7 @@ public class WeeklyAgendaWindow extends JFrame {
     this.setSize(1000, 900);
     this.setResizable(false);
     this.setLocationRelativeTo(null);
-    this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
+    this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
   }
 
 

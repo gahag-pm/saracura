@@ -2,12 +2,13 @@ package br.ufmg.dcc.pm.saracura.ui.views;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Window;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
@@ -15,7 +16,7 @@ import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.DayAgenda;
 
 
-public class DailyAgendaWindow extends JFrame {
+public class DailyAgendaDialog extends JDialog {
   protected List<AgendaEvent> events;
 
   protected DayAgenda dayAgenda;
@@ -25,8 +26,9 @@ public class DailyAgendaWindow extends JFrame {
   protected JPanel weekControls;
 
 
-  public DailyAgendaWindow(String owner, List<AgendaEvent> events) {
-    super("Agenda diária de " + owner);
+
+  public DailyAgendaDialog(Window parent, String owner, List<AgendaEvent> events) {
+    super(parent, "Agenda diária de " + owner);
 
     this.events = events;
 
@@ -54,7 +56,7 @@ public class DailyAgendaWindow extends JFrame {
     this.setSize(1000, 900);
     this.setResizable(false);
     this.setLocationRelativeTo(null);
-    this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
   }
 
 
