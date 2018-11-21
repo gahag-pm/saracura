@@ -3,8 +3,9 @@ package br.ufmg.dcc.pm.saracura.ui.views;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Window;
-import java.util.Collection;
-import java.util.Vector;
+import java.awt.event.WindowEvent;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -21,7 +22,17 @@ import javax.swing.border.EmptyBorder;
 /**
  * A dialog with a list of items and a select button.
  */
-public class ListPickDialog extends JDialog {
+public class ListPickDialog<T> extends JDialog {
+  /**
+   * The items listed - listing string : Listed object
+   */
+  protected Map<String, T> items;
+
+  /**
+   * Whether the user dismissed the dialog by pressing the window's close button.
+   */
+  protected boolean dismissed = false;
+
   protected final Dimension dButton = new Dimension(250, 75);
 
   protected final JButton selectButton = new JButton("Selecionar") {{
@@ -39,10 +50,26 @@ public class ListPickDialog extends JDialog {
   /**
    * Create a list pick dialog.
    * @param parent the parent window of the dialog
+   * @param title  the dialog's title
+   * @param items  the mapping of items to strings, mustn't be null or empty
    */
-  public ListPickDialog(Window parent) {
-    super(parent, ModalityType.APPLICATION_MODAL);
+  public ListPickDialog(Window parent, String title, Map<T, String> items) {
+    super(parent, title, ModalityType.APPLICATION_MODAL);
 
+
+    if (items == null)
+      throw new IllegalArgumentException("items mustn't be null");
+
+    if (items.isEmpty())
+      throw new IllegalArgumentException("items mustn't be empty");
+
+    this.items = items.entrySet().stream().collect(
+      Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey)
+    );
+
+
+    this.list.setListData(this.items.keySet().stream().sorted().toArray(String[]::new));
+    this.list.setSelectedIndex(0);
 
     this.selectButton.addActionListener(e -> this.setVisible(false));
 
@@ -54,6 +81,7 @@ public class ListPickDialog extends JDialog {
     panel.add(selectButton);
     this.add(panel);
 
+
     this.pack();
     this.setResizable(false);
     this.setLocationRelativeTo(null);
@@ -62,28 +90,35 @@ public class ListPickDialog extends JDialog {
 
 
 
-  /**
-   * Set the list items.
-   * @param items  the items of the list, mustn't be null nor empty.
-   */
-  public void setItems(Collection<String> items) {
-    if (items == null)
-      throw new IllegalArgumentException("items mustn't be null");
+  @Override
+  protected void processWindowEvent(WindowEvent e) {
+    if (e.getID() == WindowEvent.WINDOW_CLOSING) // WINDOW_CLOSING occurs when the user
+      this.dismissed = true;                     // presses the X button, but not when
+                                                 // setVisible(false) is called.
+    super.processWindowEvent(e);
+  }
 
-    if (items.isEmpty())
-      throw new IllegalArgumentException("items mustn't be empty");
 
-    this.list.setListData(new Vector<String>(items));
-    this.list.setSelectedIndex(0);
+  @Override
+  public void setVisible(boolean b) {
+    this.dismissed = false;
 
-    this.pack(); // Resize window to accommodate the items width.
+    super.setVisible(b);
   }
 
 
   /**
    * Get the selected item. Returns null if the list has no items.
    */
-  public String getSelected() {
-    return this.list.getSelectedValue();
+  public T getSelected() {
+    return this.items.get(this.list.getSelectedValue());
+  }
+
+
+  /**
+   * Whether the user closed the dialog without confirming.
+   */
+  public boolean getDismissed() {
+    return this.dismissed;
   }
 }

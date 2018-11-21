@@ -1,8 +1,8 @@
 package br.ufmg.dcc.pm.saracura.clinic;
 
-import java.util.LinkedHashMap;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 public enum Specialty {
@@ -63,69 +63,66 @@ public enum Specialty {
   VASCULAR_SURGERY;
 
   public static final Map<Specialty, String> textMap;
-  public static final Map<String, Specialty> valueMap;
 
   static {
-    textMap = new LinkedHashMap<Specialty, String>() {{
-      put(ACUPUNCTURE, "Acupuntura");
-      put(ANGIOLOGY, "Angiologia");
-      put(HEAD_AND_NECK_SURGERY, "Cirurgia de cabeça e pescoço");
-      put(GENERAL_SURGERY, "Cirurgia geral");
-      put(PEDIATRIC_SURGERY, "Cirurgia pediátrica");
-      put(PLASTIC_SURGERY, "Cirurgia plástica");
-      put(INTERNAL_MEDICINE, "Clínica médica");
-      put(DERMATOLOGY, "Dermatologia");
-      put(ENDOSCOPY, "Endoscopia");
-      put(GYNECOLOGY_AND_OBSTETRICS, "Ginecologia e obstetrícia");
-      put(INFECTOLOGY, "Infectologia");
-      put(MASTOLOGY, "Mastologia");
-      put(FAMILY_AND_COMMUNITY_MEDICINE, "Medicina de família e comunidade");
-      put(OCCUPATIONAL_MEDICINE, "Medicina do trabalho");
-      put(MEDICINE_OF_TRAFFIC, "Medicina do tráfego");
-      put(SPORTS_MEDICINE, "Medicina esportiva");
-      put(PHYSICAL_MEDICINE, "Medicina física e reabilitação");
-      put(NEUROLOGY, "Neurologia");
-      put(NUTROLOGY, "Nutrologia");
-      put(OPHTHALMOLOGY, "Oftalmologia");
-      put(OTORHINOLARYNGOLOGY, "Otorrinolaringologia");
-      put(PATHOLOGY, "Patologia");
-      put(UROLOGY, "Urologia");
-      put(ALLERGY_AND_IMMUNOLOGY, "Alergia e imunologia");
-      put(ANESTHESIOLOGY, "Anestesiologia");
-      put(CARDIOLOGY, "Cardiologia");
-      put(CARDIOVASCULAR_SURGERY, "Cirurgia cardiovascular");
-      put(HAND_SURGERY, "Cirurgia da mão");
-      put(DIGESTIVE_SYSTEM_SURGERY, "Cirurgia do aparelho digestivo");
-      put(THORACIC_SURGERY, "Cirurgia torácica");
-      put(VASCULAR_SURGERY, "Cirurgia vascular");
-      put(COLOPROCTOLOGY, "Coloproctologia");
-      put(ENDOCRINOLOGY_AND_METABOLISM, "Endocrinologia e metabologia");
-      put(GASTROENTEROLOGY, "Gastroenterologia");
-      put(MEDICAL_GENETICS, "Genética médica");
-      put(GERIATRICS, "Geriatria");
-      put(HEMATOLOGY_AND_HEMOTHERAPY, "Hematologia e hemoterapia");
-      put(HOMEOPATHY, "Homeopatia");
-      put(EMERGENCY_MEDICINE, "Medicina de emergência");
-      put(LEGAL_MEDICINE, "Medicina forense");
-      put(INTENSIVE_MEDICINE, "Medicina intensiva");
-      put(NUCLEAR_MEDICINE, "Medicina nuclear");
-      put(PREVENTIVE_AND_SOCIAL_MEDICINE, "Medicina preventiva e social");
-      put(NEPHROLOGY, "Nefrologia");
-      put(NEUROSURGERY, "Neurocirurgia");
-      put(OBSTETRICS, "Obstetrícia");
-      put(ONCOLOGY, "Oncologia");
-      put(ORTHOPEDICS_AND_TRAUMATOLOGY, "Ortopedia e traumatologia");
-      put(CLINICAL_PATHOLOGY, "Patologia clínica");
-      put(PEDIATRICS, "Pediatria");
-      put(PNEUMOLOGY, "Pneumologia");
-      put(PSYCHIATRY, "Psiquiatria");
-      put(RADIOLOGY_AND_DIAGNOSTIC_IMAGING, "Radiologia e diagnóstico por imagem");
-      put(RADIOTHERAPY, "Radioterapia");
-      put(RHEUMATOLOGY, "Reumatologia");
-    }};
-
-    valueMap = textMap.entrySet()
-                      .stream()
-                      .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+    textMap = Collections.unmodifiableMap(
+      new HashMap<Specialty, String>() {{
+        put(ACUPUNCTURE, "Acupuntura");
+        put(ANGIOLOGY, "Angiologia");
+        put(HEAD_AND_NECK_SURGERY, "Cirurgia de cabeça e pescoço");
+        put(GENERAL_SURGERY, "Cirurgia geral");
+        put(PEDIATRIC_SURGERY, "Cirurgia pediátrica");
+        put(PLASTIC_SURGERY, "Cirurgia plástica");
+        put(INTERNAL_MEDICINE, "Clínica médica");
+        put(DERMATOLOGY, "Dermatologia");
+        put(ENDOSCOPY, "Endoscopia");
+        put(GYNECOLOGY_AND_OBSTETRICS, "Ginecologia e obstetrícia");
+        put(INFECTOLOGY, "Infectologia");
+        put(MASTOLOGY, "Mastologia");
+        put(FAMILY_AND_COMMUNITY_MEDICINE, "Medicina de família e comunidade");
+        put(OCCUPATIONAL_MEDICINE, "Medicina do trabalho");
+        put(MEDICINE_OF_TRAFFIC, "Medicina do tráfego");
+        put(SPORTS_MEDICINE, "Medicina esportiva");
+        put(PHYSICAL_MEDICINE, "Medicina física e reabilitação");
+        put(NEUROLOGY, "Neurologia");
+        put(NUTROLOGY, "Nutrologia");
+        put(OPHTHALMOLOGY, "Oftalmologia");
+        put(OTORHINOLARYNGOLOGY, "Otorrinolaringologia");
+        put(PATHOLOGY, "Patologia");
+        put(UROLOGY, "Urologia");
+        put(ALLERGY_AND_IMMUNOLOGY, "Alergia e imunologia");
+        put(ANESTHESIOLOGY, "Anestesiologia");
+        put(CARDIOLOGY, "Cardiologia");
+        put(CARDIOVASCULAR_SURGERY, "Cirurgia cardiovascular");
+        put(HAND_SURGERY, "Cirurgia da mão");
+        put(DIGESTIVE_SYSTEM_SURGERY, "Cirurgia do aparelho digestivo");
+        put(THORACIC_SURGERY, "Cirurgia torácica");
+        put(VASCULAR_SURGERY, "Cirurgia vascular");
+        put(COLOPROCTOLOGY, "Coloproctologia");
+        put(ENDOCRINOLOGY_AND_METABOLISM, "Endocrinologia e metabologia");
+        put(GASTROENTEROLOGY, "Gastroenterologia");
+        put(MEDICAL_GENETICS, "Genética médica");
+        put(GERIATRICS, "Geriatria");
+        put(HEMATOLOGY_AND_HEMOTHERAPY, "Hematologia e hemoterapia");
+        put(HOMEOPATHY, "Homeopatia");
+        put(EMERGENCY_MEDICINE, "Medicina de emergência");
+        put(LEGAL_MEDICINE, "Medicina forense");
+        put(INTENSIVE_MEDICINE, "Medicina intensiva");
+        put(NUCLEAR_MEDICINE, "Medicina nuclear");
+        put(PREVENTIVE_AND_SOCIAL_MEDICINE, "Medicina preventiva e social");
+        put(NEPHROLOGY, "Nefrologia");
+        put(NEUROSURGERY, "Neurocirurgia");
+        put(OBSTETRICS, "Obstetrícia");
+        put(ONCOLOGY, "Oncologia");
+        put(ORTHOPEDICS_AND_TRAUMATOLOGY, "Ortopedia e traumatologia");
+        put(CLINICAL_PATHOLOGY, "Patologia clínica");
+        put(PEDIATRICS, "Pediatria");
+        put(PNEUMOLOGY, "Pneumologia");
+        put(PSYCHIATRY, "Psiquiatria");
+        put(RADIOLOGY_AND_DIAGNOSTIC_IMAGING, "Radiologia e diagnóstico por imagem");
+        put(RADIOTHERAPY, "Radioterapia");
+        put(RHEUMATOLOGY, "Reumatologia");
+      }}
+    );
   }
 }
