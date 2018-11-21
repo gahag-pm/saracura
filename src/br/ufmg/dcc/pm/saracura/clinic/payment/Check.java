@@ -33,6 +33,6 @@ public class Check implements Payment {
     if (chance == 0)
       return null;
 
-    return new Invoice(this.payee, clinic.getName(), clinic.getNLRE(), value);
+    return new Invoice(this.payee, clinic.getName(), clinic.getNRLE(), value);
   }
 }

@@ -42,6 +42,6 @@ public class Debit implements Payment {
     if (chance == 0)
       return null;
 
-    return new Invoice(this.name, clinic.getName(), clinic.getNLRE(), value);
+    return new Invoice(this.name, clinic.getName(), clinic.getNRLE(), value);
   }
 }

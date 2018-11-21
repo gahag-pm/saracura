@@ -49,7 +49,7 @@ public class HealthPlan implements Payment {
     return new Invoice(
       this.name + " " + this.registration,
       clinic.getName(),
-      clinic.getNLRE(),
+      clinic.getNRLE(),
       value
     );
   }

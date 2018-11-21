@@ -3,7 +3,7 @@ package br.ufmg.dcc.pm.saracura.clinic;
 
 public interface Clinic {
   public String getName();
-  public String getNLRE();
+  public String getNRLE();
 
   // Doctors
   // Equipments

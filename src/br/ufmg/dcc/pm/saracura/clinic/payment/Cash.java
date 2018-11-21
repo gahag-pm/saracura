@@ -28,6 +28,6 @@ public class Cash implements Payment {
 
 
   public Invoice pay(Clinic clinic, BigDecimal value) {
-    return new Invoice(this.name, clinic.getName(), clinic.getNLRE(), value);
+    return new Invoice(this.name, clinic.getName(), clinic.getNRLE(), value);
   }
 }
