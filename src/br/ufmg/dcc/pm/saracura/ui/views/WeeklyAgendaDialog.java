@@ -30,7 +30,7 @@ public class WeeklyAgendaDialog extends JDialog {
 
 
   public WeeklyAgendaDialog(Window parent, String owner, List<AgendaEvent> events) {
-    super(parent, "Agenda semanal de " + owner);
+    super(parent, "Agenda semanal de " + owner, ModalityType.APPLICATION_MODAL);
 
 
     if (events == null)

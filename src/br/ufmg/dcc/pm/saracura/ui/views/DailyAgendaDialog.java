@@ -28,7 +28,7 @@ public class DailyAgendaDialog extends JDialog {
 
 
   public DailyAgendaDialog(Window parent, String owner, List<AgendaEvent> events) {
-    super(parent, "Agenda diária de " + owner);
+    super(parent, "Agenda diária de " + owner, ModalityType.APPLICATION_MODAL);
 
     this.events = events;
 
