@@ -117,8 +117,6 @@ public class PaymentPickDialog extends JDialog {
     super.setVisible(b);
   }
 
-
-
   /**
    * Get the selected method.
    */
