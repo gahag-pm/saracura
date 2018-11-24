@@ -101,7 +101,8 @@ public class ListPickDialog<T> extends JDialog {
 
   @Override
   public void setVisible(boolean b) {
-    this.dismissed = false;
+    if (b)
+      this.dismissed = false;
 
     super.setVisible(b);
   }
@@ -113,7 +114,6 @@ public class ListPickDialog<T> extends JDialog {
   public T getSelected() {
     return this.items.get(this.list.getSelectedValue());
   }
-
 
   /**
    * Whether the user closed the dialog without confirming.
