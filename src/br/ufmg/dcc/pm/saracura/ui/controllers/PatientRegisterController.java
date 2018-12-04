@@ -1,28 +1,32 @@
 package br.ufmg.dcc.pm.saracura.ui.controllers;
 
-import java.awt.Window;
-
 import br.ufmg.dcc.pm.saracura.ui.views.PatientRegisterDialog;
+
+import java.awt.*;
 
 
 public class PatientRegisterController implements Controller<Void> {
-  public PatientRegisterDialog patientRegisterDialog;
-
-
-
-  public PatientRegisterController(PatientRegisterDialog patientRegisterDialog) {
-    if (patientRegisterDialog == null)
-      throw new IllegalArgumentException("patientRegisterDialog mustn't be null");
-
-
-    this.patientRegisterDialog = patientRegisterDialog;
-  }
-
-
 
   public Void execute(Window parent) {
     // TODO.
-    this.patientRegisterDialog.setVisible(true);
+
+    var patientRegisterDialog = new PatientRegisterDialog(parent);
+    patientRegisterDialog.setVisible(true);
+
+    if(!patientRegisterDialog.isDismissed()){
+      if(patientRegisterDialog.getNinFieldContent().equals("")){
+        System.out.println("NOME INVALIDO");
+      } else {
+        System.out.println(patientRegisterDialog.getNameFieldContent());
+      }
+      if(patientRegisterDialog.getNinFieldContent().equals("")){
+        System.out.println("CPF INVALIDO");
+      } else {
+        System.out.println(patientRegisterDialog.getNinFieldContent());
+      }
+    }
+    patientRegisterDialog.dispose();
+
     return null;
   }
 }

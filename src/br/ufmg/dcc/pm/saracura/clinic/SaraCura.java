@@ -47,7 +47,7 @@ public class SaraCura implements Clinic {
 
   public void addEquipment(Equipment equipment) {
     if (equipment == null)
-      throw new IllegalArgumentException("quipment mustn't be null");
+      throw new IllegalArgumentException("equipment mustn't be null");
 
     this.equipments.add(equipment);
   }

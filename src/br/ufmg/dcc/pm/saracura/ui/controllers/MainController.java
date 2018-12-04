@@ -1,8 +1,8 @@
 package br.ufmg.dcc.pm.saracura.ui.controllers;
 
-import java.awt.Window;
-
 import br.ufmg.dcc.pm.saracura.ui.views.MainWindow;
+
+import java.awt.*;
 
 
 public class MainController implements Controller<Void> {
@@ -12,12 +12,12 @@ public class MainController implements Controller<Void> {
 
   /**
    * Create a main controller.
-   * @param window                     the main window, mustn't be null
-   * @param appointmentController      the appointment controller, mustn't be null
-   * @param examController             the exam controller, mustn't be null
-   * @param patientRegisterController  the patient register controller, mustn't be null
-   * @param doctorRegisterController   the doctor register controller, mustn't be null
-   * @param equipmentRegisterControlle the equipment register controlle, mustn't be null
+   * @param window                      the main window, mustn't be null
+   * @param appointmentController       the appointment controller, mustn't be null
+   * @param examController              the exam controller, mustn't be null
+   * @param patientRegisterController   the patient register controller, mustn't be null
+   * @param doctorRegisterController    the doctor register controller, mustn't be null
+   * @param equipmentRegisterController the equipment register controlle, mustn't be null
    */
   public MainController(
     MainWindow window,

@@ -38,7 +38,7 @@ public class Doctor implements Schedulable<Doctor, Equipment> {
    * @param specialties         the doctor's specialties, mustn't be null or empty
    * @param appointmentDuration the duration of each appointment in the agenda,
    *                            mustn't be null
-   * @param starTime            the beggining of the work day, mustn't be null
+   * @param startTime           the beggining of the work day, mustn't be null
    * @param dayDuration         the duration of the work day, mustn't be null
    * @param workDays            the days of work in the week, mustn't be null
    */
