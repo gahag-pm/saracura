@@ -36,17 +36,14 @@ public class Main {
 
 
     var mainWindow = new MainWindow();
-//    var patientRegisterDialog = new PatientRegisterDialog();
     var doctorRegisterDialog = new DoctorRegisterDialog();
     var equipmentRegisterDialog = new EquipmentRegisterDialog();
-
 
     var agendaController = new AgendaController();
     var examAgendaController = new ExamAgendaController();
     var appointmentController = new AppointmentController(saracura, agendaController);
     var examController = new ExamController(saracura, examAgendaController);
-//    var patientRegisterController = new PatientRegisterController(patientRegisterDialog);
-    var patientRegisterController = new PatientRegisterController();
+    var patientRegisterController = new PatientRegisterController(saracura);
     var doctorRegisterController = new DoctorRegisterController(doctorRegisterDialog);
     var equipmentRegisterController = new EquipmentRegisterController(equipmentRegisterDialog);
     var mainController = new MainController(
