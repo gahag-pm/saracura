@@ -6,8 +6,6 @@ import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -26,8 +24,6 @@ public class PaymentCashDialog extends JDialog {
    * Whether the user dismissed the dialog by pressing the window's close button.
    */
   protected boolean dismissed = false;
-
-  protected NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
 
   protected JButton confirmButton = new JButton("Ok") {{
     setSize(new Dimension(200, 75));
@@ -87,11 +83,11 @@ public class PaymentCashDialog extends JDialog {
     super.setVisible(b);
   }
 
-    /**
+  /**
    * Get the money input.
    */
   public BigDecimal getSelected() {
-    return this.ATMInput.getValue(); // This should never happen.
+    return this.ATMInput.getValue();
   }
 
   /**
