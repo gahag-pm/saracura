@@ -6,6 +6,7 @@ import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -34,6 +35,7 @@ public class PaymentCardDialog extends JDialog {
   protected JTextField numberTextField;
   protected JTextField nameTextField;
   protected MoneyTextField ATMInput = new MoneyTextField();
+
   protected JButton confirmButton = new JButton("Ok") {{
     setSize(new Dimension(200, 75));
     setMaximumSize(new Dimension(200, 75));
@@ -69,12 +71,13 @@ public class PaymentCardDialog extends JDialog {
     panel.add(ATMInput);
     panel.add(number);
     panel.add(numberTextField);
+    panel.add(Box.createRigidArea(new Dimension(10, 15)));
     panel.add(confirmButton);
     panel.setPreferredSize(new Dimension(280, 180));
 
     this.add(panel);
     this.pack();
-    this.setSize(new Dimension(280, 180));
+    this.setSize(new Dimension(280, 200));
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
