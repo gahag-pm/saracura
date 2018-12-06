@@ -1,5 +1,5 @@
 package br.ufmg.dcc.pm.saracura.ui.views;
-
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -15,7 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.AbstractDocument;
 
+import br.ufmg.dcc.pm.saracura.ui.controls.money.CreditCardTextField;
 import br.ufmg.dcc.pm.saracura.ui.controls.money.MoneyTextField;
 
 /**
@@ -33,6 +35,7 @@ public class PaymentPlanDialog extends JDialog {
   protected JTextField nameField;
   protected JLabel regLabel;
   protected JTextField regField;
+  protected JLabel value;  
   protected MoneyTextField ATMInput = new MoneyTextField();
 
   protected Dimension dimension = new Dimension(200, 75);
@@ -55,29 +58,45 @@ public class PaymentPlanDialog extends JDialog {
    * @param parent the parent window of the dialog
    */
   public PaymentPlanDialog(Window parent) {
-    super(parent, "Pagamento do plano", ModalityType.APPLICATION_MODAL);
+    super(parent, "Pagamento em cheque", ModalityType.APPLICATION_MODAL);    
+    
+    nameLabel = new JLabel("Nome:      ");
+    nameField = new JTextField(14);
+    regLabel = new JLabel("Registro: ");
+    regField = new JTextField(14);
+    ((AbstractDocument) regField.getDocument()).setDocumentFilter(new CreditCardTextField());
+    value = new JLabel("Valor:       ");
+    
+    
+    var panelButtons = new JPanel();
+    var panelFields = new JPanel();
+    var panel = new JPanel(new BorderLayout());
 
-    var panel = new JPanel(new FlowLayout());
-    nameLabel = new JLabel("Nome: ");
-    nameField = new JTextField(20);
-    regLabel = new JLabel("Registro do plano: ");
-    regField = new JTextField(20);
-
-    panel.setBorder(new EmptyBorder(10, 20, 15, 20));
-    panel.add(nameLabel);
-    panel.add(nameField);
-    panel.add(regLabel);
-    panel.add(regField);
-    panel.add(Box.createRigidArea(new Dimension(340, 5)));
-    panel.add(confirmButton);
-    panel.add(cancelButton);
+    panelFields.setLayout(new FlowLayout(FlowLayout.LEFT));
+    panel.setBorder(new EmptyBorder(10, 20, 15, 20));        
+    panelFields.add(nameLabel);
+    panelFields.add(nameField);
+    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
+    panelFields.add(regLabel);
+    panelFields.add(regField);
+    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
+    panelFields.add(value);
+    panelFields.add(ATMInput);
+    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
+    panelButtons.add(confirmButton);
+    panelButtons.add(cancelButton);
+    
+    panelButtons.setSize(new Dimension(300, 75));
+    panel.add(panelFields);
+    panel.add(panelButtons, BorderLayout.SOUTH);
 
     this.add(panel);
-    this.setMinimumSize(new Dimension(300,190));
+    this.setMinimumSize(new Dimension(300, 200));
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
   }
+
 
 
   @Override
@@ -98,9 +117,23 @@ public class PaymentPlanDialog extends JDialog {
   }
 
   /**
+   * Get the patient's name.
+   */
+  public String getNameFieldContent() {
+    return this.nameField.getText();
+  }
+
+  /**
+   * Get the patient's plan registration number.
+   */
+  public String getRegFieldContent() {
+    return this.regField.getText();
+  }
+
+  /**
    * Get the money input.
    */
-  public BigDecimal getSelected() {
+  public BigDecimal getValue() {
     return this.ATMInput.getValue();
   }
 

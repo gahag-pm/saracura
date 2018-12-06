@@ -1,43 +1,48 @@
 package br.ufmg.dcc.pm.saracura.ui.views;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.AbstractDocument;
 
-import br.ufmg.dcc.pm.saracura.ui.controls.money.CreditCardTextField;
 import br.ufmg.dcc.pm.saracura.ui.controls.money.MoneyTextField;
 
-
-public class PaymentCardDialog extends JDialog {
+/**
+ * A dialog with the cash payment.
+ */
+public class PaymentCheckDialog extends JDialog {
   /**
    * Whether the user dismissed the dialog by pressing the window's close button.
    */
   protected boolean dismissed = false;
   /**
-   * Labels and text fields corresponding to name, value and number.
+   * Labels and text fields corresponding to name, register and value.
    */
-  protected JLabel name;
-  protected JLabel value;
-  protected JLabel number;
-  protected JTextField numberTextField;
-  protected JTextField nameTextField;
+  protected JLabel nameLabel;
+  protected JTextField nameField;
+  protected JLabel valueLabel;
   protected MoneyTextField ATMInput = new MoneyTextField();
 
+  protected Dimension dimension = new Dimension(200, 75);
+  protected JButton cancelButton = new JButton("Cancelar") {{
+    setSize(dimension);
+    setMaximumSize(new Dimension(200, 75));
+    setAlignmentX(Component.CENTER_ALIGNMENT);
+  }};
   protected JButton confirmButton = new JButton("Ok") {{
-    setSize(new Dimension(200, 75));
+    setSize(dimension);
     setMaximumSize(new Dimension(200, 75));
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
@@ -45,42 +50,42 @@ public class PaymentCardDialog extends JDialog {
 
 
   /**
-   * Creates a cash payment dialog.
+   * Creates a check payment dialog.
    * It is unresizable, dispose on close, positioned at screen center.
    * @param parent the parent window of the dialog
    */
-  public PaymentCardDialog (Window parent) {
-    super(parent, "Pagamento em cartão", ModalityType.APPLICATION_MODAL);
-    name = new JLabel("Nome:");
-    name.setSize(name.getPreferredSize());
-    value = new JLabel("Valor:");
-    value.setSize(value.getPreferredSize());
-    number = new JLabel("Número do Cartão:");
-    number.setSize(number.getPreferredSize());
+  public PaymentCheckDialog(Window parent) {
+    super(parent, "Pagamento em cheque", ModalityType.APPLICATION_MODAL);
 
-    numberTextField = new JTextField(10);
-    ((AbstractDocument) numberTextField.getDocument()).setDocumentFilter(new CreditCardTextField());
-    nameTextField = new JTextField(10);
+    nameLabel = new JLabel("Nome: ");
+    nameField = new JTextField(14);
+    valueLabel = new JLabel("Valor: ");
 
-    JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+
+    var panelButtons = new JPanel();
+    var panelFields = new JPanel();
+    var panel = new JPanel(new BorderLayout());
+
+    panelFields.setLayout(new FlowLayout(FlowLayout.LEFT));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
-    panel.add(name);
-    panel.add(nameTextField);
-    panel.add(value);
-    panel.add(ATMInput);
-    panel.add(number);
-    panel.add(numberTextField);
-    panel.add(Box.createRigidArea(new Dimension(10, 15)));
-    panel.add(confirmButton);
-    panel.setPreferredSize(new Dimension(280, 180));
+    panelFields.add(nameLabel);
+    panelFields.add(nameField);
+    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
+    panelFields.add(valueLabel);
+    panelFields.add(ATMInput);
+    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
+    panelButtons.add(confirmButton);
+    panelButtons.add(cancelButton);
+
+    panelButtons.setSize(new Dimension(300, 75));
+    panel.add(panelFields);
+    panel.add(panelButtons, BorderLayout.SOUTH);
 
     this.add(panel);
-    this.pack();
-    this.setSize(new Dimension(280, 200));
+    this.setMinimumSize(new Dimension(300,170));
     this.setResizable(false);
-    this.setLocationRelativeTo(null);    
-    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    this.setLocationRelativeTo(null);
+    this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
   }
 
 
@@ -105,20 +110,13 @@ public class PaymentCardDialog extends JDialog {
    * Get the patient's name.
    */
   public String getNameFieldContent() {
-    return this.nameTextField.getText();
-  }
-
-  /**
-   * Get the patient's credit card's number.
-   */
-  public String getNumberFieldContent() {
-    return this.numberTextField.getText();
+    return this.nameField.getText();
   }
 
   /**
    * Get the money input.
    */
-  public BigDecimal getSelected() {
+  public BigDecimal getValue() {
     return this.ATMInput.getValue();
   }
 
