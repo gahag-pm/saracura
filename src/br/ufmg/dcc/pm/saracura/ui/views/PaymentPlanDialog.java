@@ -35,7 +35,7 @@ public class PaymentPlanDialog extends JDialog {
   protected JTextField nameField;
   protected JLabel regLabel;
   protected JTextField regField;
-  protected JLabel value;  
+  protected JLabel value;
   protected MoneyTextField ATMInput = new MoneyTextField();
 
   protected Dimension dimension = new Dimension(200, 75);
@@ -67,13 +67,21 @@ public class PaymentPlanDialog extends JDialog {
     ((AbstractDocument) regField.getDocument()).setDocumentFilter(new CreditCardTextField());
     value = new JLabel("Valor:       ");
     
-    
+    this.cancelButton.addActionListener(e -> {
+        this.dismissed = true;
+        this.dispose();
+      });
+
+    this.confirmButton.addActionListener(e -> {
+        this.dispose();
+      });
+
     var panelButtons = new JPanel();
     var panelFields = new JPanel();
     var panel = new JPanel(new BorderLayout());
 
     panelFields.setLayout(new FlowLayout(FlowLayout.LEFT));
-    panel.setBorder(new EmptyBorder(10, 20, 15, 20));        
+    panel.setBorder(new EmptyBorder(10, 20, 15, 20));
     panelFields.add(nameLabel);
     panelFields.add(nameField);
     panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
@@ -85,7 +93,7 @@ public class PaymentPlanDialog extends JDialog {
     panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
     panelButtons.add(confirmButton);
     panelButtons.add(cancelButton);
-    
+
     panelButtons.setSize(new Dimension(300, 75));
     panel.add(panelFields);
     panel.add(panelButtons, BorderLayout.SOUTH);

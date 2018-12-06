@@ -77,6 +77,10 @@ public class PaymentPickDialog extends JDialog {
 
     this.healthPlanButton.setSelected(true);
 
+    this.confirmButton.addActionListener(e -> {
+        this.dispose();
+      });
+
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));

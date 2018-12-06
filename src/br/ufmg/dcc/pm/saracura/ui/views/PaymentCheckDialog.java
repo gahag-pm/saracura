@@ -66,6 +66,15 @@ public class PaymentCheckDialog extends JDialog {
     var panelFields = new JPanel();
     var panel = new JPanel(new BorderLayout());
 
+    this.cancelButton.addActionListener(e -> {
+        this.dismissed = true;
+        this.dispose();
+      });
+
+    this.confirmButton.addActionListener(e -> {
+        this.dispose();
+      });
+
     panelFields.setLayout(new FlowLayout(FlowLayout.LEFT));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
     panelFields.add(nameLabel);

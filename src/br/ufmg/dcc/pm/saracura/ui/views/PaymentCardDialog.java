@@ -62,6 +62,10 @@ public class PaymentCardDialog extends JDialog {
     ((AbstractDocument) numberTextField.getDocument()).setDocumentFilter(new CreditCardTextField());
     nameTextField = new JTextField(10);
 
+    this.confirmButton.addActionListener(e -> {
+        this.dispose();
+      });
+
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
@@ -79,7 +83,7 @@ public class PaymentCardDialog extends JDialog {
     this.pack();
     this.setSize(new Dimension(280, 200));
     this.setResizable(false);
-    this.setLocationRelativeTo(null);    
+    this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 

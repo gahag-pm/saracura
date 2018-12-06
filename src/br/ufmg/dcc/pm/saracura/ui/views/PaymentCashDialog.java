@@ -47,6 +47,15 @@ public class PaymentCashDialog extends JDialog {
     JPanel labelPanel = new JPanel();
     JLabel myLabel = new JLabel("Digite o valor:");
 
+    // this.cancelButton.addActionListener(e -> {
+    //     this.dismissed = true;
+    //     this.dispose();
+    //   });
+
+    this.confirmButton.addActionListener(e -> {
+        this.dispose();
+      });
+
     panel.setLayout(new BorderLayout());
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
     myLabel.setSize(myLabel.getPreferredSize());
