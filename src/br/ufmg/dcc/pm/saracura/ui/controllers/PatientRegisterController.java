@@ -20,7 +20,6 @@ public class PatientRegisterController implements Controller<Void> {
   }
 
   public Void execute(Window parent) {
-    // TODO.
 
     String patientName;
     String nin;

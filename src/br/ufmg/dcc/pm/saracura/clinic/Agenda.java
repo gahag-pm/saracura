@@ -89,7 +89,7 @@ public class Agenda<
     final long startMinutes = ChronoUnit.MINUTES.between(LocalTime.MIN, startTime);
     final long maxMinutes = LocalTime.MAX.get(ChronoField.MINUTE_OF_DAY);
     if (startMinutes + dayDuration.toSeconds() < maxMinutes)
-      throw new IllegalArgumentException("");
+      throw new IllegalArgumentException("TIME DURATION EXCEPTION");
 
 
     this.operator = operator;

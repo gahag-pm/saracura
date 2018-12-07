@@ -17,7 +17,7 @@ public class MainController implements Controller<Void> {
    * @param examController              the exam controller, mustn't be null
    * @param patientRegisterController   the patient register controller, mustn't be null
    * @param doctorRegisterController    the doctor register controller, mustn't be null
-   * @param equipmentRegisterController the equipment register controlle, mustn't be null
+   * @param equipmentRegisterController the equipment register controller, mustn't be null
    */
   public MainController(
     MainWindow window,
