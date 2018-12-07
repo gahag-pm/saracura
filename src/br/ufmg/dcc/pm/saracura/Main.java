@@ -5,7 +5,6 @@ import br.ufmg.dcc.pm.saracura.clinic.Patient;
 import br.ufmg.dcc.pm.saracura.clinic.SaraCura;
 import br.ufmg.dcc.pm.saracura.clinic.Specialty;
 import br.ufmg.dcc.pm.saracura.ui.controllers.*;
-import br.ufmg.dcc.pm.saracura.ui.views.EquipmentRegisterDialog;
 import br.ufmg.dcc.pm.saracura.ui.views.MainWindow;
 
 import java.time.DayOfWeek;
@@ -35,7 +34,6 @@ public class Main {
 
 
     var mainWindow = new MainWindow();
-    var equipmentRegisterDialog = new EquipmentRegisterDialog();
 
     var agendaController = new AgendaController();
     var examAgendaController = new ExamAgendaController();
@@ -43,7 +41,7 @@ public class Main {
     var examController = new ExamController(saracura, examAgendaController);
     var patientRegisterController = new PatientRegisterController(saracura);
     var doctorRegisterController = new DoctorRegisterController(saracura);
-    var equipmentRegisterController = new EquipmentRegisterController(equipmentRegisterDialog);
+    var equipmentRegisterController = new EquipmentRegisterController(saracura);
     var mainController = new MainController(
       mainWindow,
       appointmentController,

@@ -16,9 +16,7 @@ import java.util.TreeSet;
 
 
 public class DoctorRegisterController implements Controller<Void> {
-  public Clinic clinic;
-
-
+  protected Clinic clinic;
 
   public DoctorRegisterController(Clinic clinic) {
     if (clinic == null) {
@@ -26,8 +24,6 @@ public class DoctorRegisterController implements Controller<Void> {
     }
     this.clinic = clinic;
   }
-
-
 
   public Void execute(Window parent) {
 
@@ -189,13 +185,6 @@ public class DoctorRegisterController implements Controller<Void> {
         appointmentDuration = Duration.ofHours(doctorRegisterDialog.getAppointmentDurationHours()).plus(Duration.ofMinutes(doctorRegisterDialog.getAppointmentDurationMinutes()));
       }
 
-      System.out.println(doctorName);
-      System.out.println(crm);
-      System.out.println(specialties);
-      System.out.println(workDays);
-      System.out.println(startTime);
-      System.out.println(dayDuration);
-      System.out.println(appointmentDuration);
       clinic.addDoctor(new Doctor(
               crm,
               doctorName,
@@ -206,9 +195,6 @@ public class DoctorRegisterController implements Controller<Void> {
               workDays
       ));
     }
-
-
-
 
     doctorRegisterDialog.dispose();
 

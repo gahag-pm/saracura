@@ -78,7 +78,7 @@ public class DoctorRegisterDialog extends JDialog {
         specialties.setSelectedIndex(0);
 
         String[] days = new String[]{"Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira",
-                "Quinta-feira", "Sexta-feira", "Sábado"};
+                "Quinta-feira", "Sexta-feira", "Sabado"};
         workDays.setListData(days);
         workDays.setSelectedIndex(0);
 
