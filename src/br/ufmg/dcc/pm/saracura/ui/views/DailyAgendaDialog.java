@@ -12,6 +12,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import br.ufmg.dcc.pm.saracura.ui.controls.agenda.Agenda;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.DayAgenda;
 
@@ -34,7 +35,10 @@ public class DailyAgendaDialog extends JDialog {
 
     this.dayAgenda = new DayAgenda(this.events);
     this.weekControls = new JPanel(new FlowLayout());
-
+    
+    this.dayAgenda.addAgendaScheduledEventListener(e -> System.out.println(e.getAgendaEvent()));
+    this.dayAgenda.addAgendaUnscheduledEventListener(e -> System.out.println(e.getDateTime()));
+    
     this.goToTodayBtn = new JButton("Hoje") {{
       addActionListener(e -> dayAgenda.goToToday());
     }};

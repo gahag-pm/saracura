@@ -30,8 +30,6 @@ public class WeekAgenda extends Agenda {
     this.date = LocalDate.now();
   }
 
-
-
   @Override
   protected boolean dateInRange(LocalDate date) {
     var startOfWeek = LocalDateUtil.getStartOfWeek(date);
@@ -76,5 +74,15 @@ public class WeekAgenda extends Agenda {
   public void prevMonth() {
     this.date = LocalDateUtil.getStartOfWeek(this.date).minusWeeks(4);
     repaint();
+  }
+
+  @Override
+  protected DayOfWeek getStartDay() {
+    return this.date.getDayOfWeek();
+  }
+
+  @Override
+  protected DayOfWeek getEndDay() {
+    return this.date.getDayOfWeek();
   }
 }

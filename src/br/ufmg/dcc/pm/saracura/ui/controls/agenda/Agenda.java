@@ -5,27 +5,30 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JComponent;
 import javax.swing.Timer;
-
+import javax.swing.event.EventListenerList;
 
 public abstract class Agenda extends JComponent {
-  // An estimate of the width of a single character (not exact but good
-  // enough)
+  // An estimate of the width of a single character 
   private static final int FONT_LETTER_PIXEL_WIDTH = 7;
-
 
   protected static final LocalTime START_TIME = LocalTime.of(7, 0);
   protected static final LocalTime END_TIME = LocalTime.of(20, 0);
@@ -35,31 +38,27 @@ public abstract class Agenda extends JComponent {
 
   protected static final int HEADER_HEIGHT = 30;
   protected static final int TIME_COL_WIDTH = 100;
-
-
-
-  public static LocalTime roundTime(LocalTime time, int minutes) {
-    LocalTime t = time;
-
-    if (t.getMinute() % minutes > minutes / 2) {
-      t = t.plusMinutes(minutes - (t.getMinute() % minutes));
-    } else if (t.getMinute() % minutes < minutes / 2) {
-      t = t.minusMinutes(t.getMinute() % minutes);
-    }
-
-    return t;
-  }
-
-
-
+  
   protected List<DayOfWeek> week;
   protected List<AgendaEvent> events;
   protected double timeScale;
   protected double dayWidth;
   protected Graphics2D g2;
 
+  protected abstract DayOfWeek getStartDay();
+  protected abstract DayOfWeek getEndDay();
+  protected abstract boolean dateInRange(LocalDate date);
+  protected abstract LocalDate getDateFromDay(DayOfWeek day);
+  protected abstract int numDaysToShow();
+  protected abstract double dayToPixel(DayOfWeek dayOfWeek);
+  protected abstract void setRangeToToday();
+  
+  private EventListenerList listenerList = new EventListenerList();
 
-
+  public Agenda(List<DayOfWeek> week) {
+      this(week, new ArrayList<AgendaEvent>());
+   }
+  
   protected Agenda(List<DayOfWeek> week, List<AgendaEvent> events) {
     if (week == null)
       throw new IllegalArgumentException("week mustn't be null");
@@ -72,25 +71,112 @@ public abstract class Agenda extends JComponent {
 
     this.week = week;
     this.events = events;
+    
+    setupEventListeners();
 
     // Repaints every minute to update the current time line
     Timer timer = new Timer(1000*60, e -> repaint());
     timer.start();
   }
+  
+  public static LocalTime roundTime(LocalTime time, int minutes) {
+      LocalTime t = time;
 
-  public Agenda(List<DayOfWeek> week) {
-    this(week, new ArrayList<AgendaEvent>());
+      if (t.getMinute() % minutes > minutes / 2) {
+        t = t.plusMinutes(minutes - (t.getMinute() % minutes));
+      } else if (t.getMinute() % minutes < minutes / 2) {
+        t = t.minusMinutes(t.getMinute() % minutes);
+      }
+
+      return t;
+    }
+
+  private void setupEventListeners() {
+      this.addMouseListener(new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+              super.mouseClicked(e);
+              if (!checkScheduledAgendaClick(e.getPoint())) {
+                  checkUnscheduledAgendaClick(e.getPoint());
+              }
+          }
+      });
+  }
+  
+  private boolean checkScheduledAgendaClick(Point p) {
+      double x0, x1, y0, y1;
+      for (AgendaEvent event : events) {
+          if (!dateInRange(event.getDate())) continue;
+
+          x0 = dayToPixel(event.getDate().getDayOfWeek());
+          y0 = timeToPixel(event.getStart());
+          x1 = dayToPixel(event.getDate().getDayOfWeek()) + dayWidth;
+          y1 = timeToPixel(event.getEnd());
+
+          if (p.getX() >= x0 && p.getX() <= x1 && p.getY() >= y0 && p.getY() <= y1) {
+              fireAgendaScheduledClick(event);
+              return true;
+          }
+      }
+      return false;
+  }
+  
+  private boolean checkUnscheduledAgendaClick(Point p) {
+      final double x0 = dayToPixel(getStartDay());
+      final double x1 = dayToPixel(getEndDay()) + dayWidth;
+      final double y0 = timeToPixel(START_TIME);
+      final double y1 = timeToPixel(END_TIME);
+
+      if (p.getX() >= x0 && p.getX() <= x1 && p.getY() >= y0 && p.getY() <= y1) {
+          LocalDate date = getDateFromDay(pixelToDay(p.getX()));
+          fireAgendaUnscheduledClick(LocalDateTime.of(date, pixelToTime(p.getY())));
+          return true;
+      }
+      return false;
+  }
+  
+  public void addAgendaScheduledEventListener(AgendaScheduledEventListener l) {
+      listenerList.add(AgendaScheduledEventListener.class, l);
   }
 
+  public void removeAgendaScheduledEventListener(AgendaScheduledEventListener l) {
+      listenerList.remove(AgendaScheduledEventListener.class, l);
+  }
 
+  // Notify all listeners that have registered interest for
+  // notification on this event type.
+  private void fireAgendaScheduledClick(AgendaEvent agendaEvent) {
+      // Guaranteed to return a non-null array
+      Object[] listeners = listenerList.getListenerList();
+      // Process the listeners last to first, notifying
+      // those that are interested in this event
+      AgendaScheduledClickEvent agendaScheduledClickEvent;
+      for (int i = listeners.length - 2; i >= 0; i -= 2) {
+          if (listeners[i] == AgendaScheduledEventListener.class) {
+              agendaScheduledClickEvent = new AgendaScheduledClickEvent(this, agendaEvent);
+              ((AgendaScheduledEventListener) listeners[i + 1]).agendaScheduledClick(agendaScheduledClickEvent);
+          }
+      }
+  }
+  
+  public void addAgendaUnscheduledEventListener(AgendaUnscheduledEventListener l) {
+      listenerList.add(AgendaUnscheduledEventListener.class, l);
+  }
 
-  protected abstract boolean dateInRange(LocalDate date);
-  protected abstract LocalDate getDateFromDay(DayOfWeek day);
-  protected abstract int numDaysToShow();
-  protected abstract double dayToPixel(DayOfWeek dayOfWeek);
-  protected abstract void setRangeToToday();
+  public void removeAgendaUnscheduledEventListener(AgendaUnscheduledEventListener l) {
+      listenerList.remove(AgendaUnscheduledEventListener.class, l);
+  }
 
-
+  private void fireAgendaUnscheduledClick(LocalDateTime dateTime) {
+      Object[] listeners = listenerList.getListenerList();
+      AgendaUnscheduledClickEvent agendaUnscheduledClickEvent;
+      for (int i = listeners.length - 2; i >= 0; i -= 2) {
+          if (listeners[i] == AgendaUnscheduledEventListener.class) {
+              agendaUnscheduledClickEvent = new AgendaUnscheduledClickEvent(this, dateTime);
+              ((AgendaUnscheduledEventListener) listeners[i + 1]).agendaUnscheduledClick(agendaUnscheduledClickEvent);
+          }
+      }
+  }
   private void calculateScaleVars() {
     int width = getWidth();
     int height = getHeight();
@@ -111,7 +197,24 @@ public abstract class Agenda extends JComponent {
   private double timeToPixel(LocalTime time) {
     return ((time.toSecondOfDay() - START_TIME.toSecondOfDay()) * timeScale) + HEADER_HEIGHT;
   }
-
+  
+  private LocalTime pixelToTime(double y) {
+      return LocalTime.ofSecondOfDay((int) ((y - HEADER_HEIGHT) / timeScale) + START_TIME.toSecondOfDay()).truncatedTo(ChronoUnit.MINUTES);
+  }
+  
+  private DayOfWeek pixelToDay(double x) {
+      double pixel;
+      DayOfWeek day;
+      for (int i = getStartDay().getValue(); i <= getEndDay().getValue(); i++) {
+          day = DayOfWeek.of(i);
+          pixel = dayToPixel(day);
+          if (x >= pixel && x < pixel + dayWidth) {
+              return day;
+          }
+      }
+      return null;
+  }
+  
   private void drawDayHeadings() {
     for (DayOfWeek day : this.week) {
       LocalDate date = this.getDateFromDay(day);
@@ -277,7 +380,9 @@ public abstract class Agenda extends JComponent {
     drawEvents();
     drawCurrentTimeLine();
   }
-
+  
+  
+  
   protected double getDayWidth() {
     return dayWidth;
   }

@@ -11,10 +11,10 @@ import java.util.Objects;
  * This class is immutable.
  */
 public class AgendaEvent {
-  public final LocalDate date;
-  public final LocalTime start;
-  public final LocalTime end;
-  public final String text;
+  public LocalDate date;
+  public LocalTime start;
+  public LocalTime end;
+  public String text;
   public final Color color;
 
 
@@ -70,13 +70,47 @@ public class AgendaEvent {
     this(date, start, end, text, Color.PINK);
   }
 
-
-
   @Override
   public String toString() {
     return this.date + " " + this.start + "-" + this.end + ". " + this.text;
   }
 
+  public LocalDate getDate() {
+      return date;
+  }
+
+  public void setDate(LocalDate date) {
+      this.date = date;
+  }
+
+  public LocalTime getStart() {
+      return start;
+  }
+
+  public void setStart(LocalTime start) {
+      this.start = start;
+  }
+
+  public LocalTime getEnd() {
+      return end;
+  }
+
+  public void setEnd(LocalTime end) {
+      this.end = end;
+  }
+
+  public String getText() {
+      return text;
+  }
+
+  public void setText(String text) {
+      this.text = text;
+  }
+
+  public Color getColor() {
+      return color;
+  }
+  
   @Override
   public boolean equals(Object o) {
     if (o == null || !(o instanceof AgendaEvent))

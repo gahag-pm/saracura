@@ -12,19 +12,17 @@ public class DayAgenda extends Agenda {
 
   public DayAgenda(List<AgendaEvent> events) {
     super(List.of(LocalDate.now().getDayOfWeek()), events);
-    date = LocalDate.now();
+    this.date = LocalDate.now();
   }
-
-
 
   @Override
   protected boolean dateInRange(LocalDate date) {
-    return date.equals(date);
+    return this.date.equals(date);
   }
 
   @Override
   protected LocalDate getDateFromDay(DayOfWeek day) {
-    return date;
+    return this.date;
   }
 
   @Override
@@ -34,7 +32,7 @@ public class DayAgenda extends Agenda {
 
   @Override
   protected void setRangeToToday() {
-    date = LocalDate.now();
+    this.date = LocalDate.now();
   }
 
   @Override
@@ -44,12 +42,22 @@ public class DayAgenda extends Agenda {
 
 
   public void nextDay() {
-    date = date.plusDays(1);
+    this.date = this.date.plusDays(1);
     repaint();
   }
 
   public void prevDay() {
-    date = date.minusDays(1);
+    this.date = this.date.minusDays(1);
     repaint();
+  }
+
+  @Override
+  protected DayOfWeek getStartDay() {
+    return this.date.getDayOfWeek();
+  }
+
+  @Override
+  protected DayOfWeek getEndDay() {
+    return this.date.getDayOfWeek();
   }
 }
