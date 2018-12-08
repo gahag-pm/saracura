@@ -16,6 +16,7 @@ public class Doctor implements Schedulable<Doctor, Equipment> {
    */
   protected final Agenda<Doctor, Equipment> agenda;
 
+
   /**
    * The doctor's CRM.
    */
@@ -28,6 +29,8 @@ public class Doctor implements Schedulable<Doctor, Equipment> {
    * The doctor's specialties.
    */
   public final Set<Specialty> specialties;
+
+
 
   /**
    * Create a doctor.
@@ -73,6 +76,8 @@ public class Doctor implements Schedulable<Doctor, Equipment> {
       workDays
     );
   }
+
+
 
   public Agenda<Doctor, Equipment> getAgenda() {
     return this.agenda;

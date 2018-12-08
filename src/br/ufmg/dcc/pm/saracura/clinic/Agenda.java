@@ -38,7 +38,7 @@ public class Agenda<
    */
   public final Duration appointmentDuration;
   /**
-   * The beggining time of the work day.
+   * The beginning time of the work day.
    */
   public final LocalTime startTime;
   /**
@@ -206,7 +206,7 @@ public class Agenda<
 
   /**
    * Get a read-only view of the appointments in the given time interval.
-   * @param begin the beggining date of the interval
+   * @param begin the beginning date of the interval
    * @param end the end date of the interval
    */
   public NavigableSet<Appointment<Operator, Cooperator>> frameView(
@@ -215,7 +215,7 @@ public class Agenda<
   ) {
     var _begin = Appointment.<Operator, Cooperator>mock(begin.atStartOfDay());
     var _end = Appointment.<Operator, Cooperator>mock(end.plusDays(1).atStartOfDay());
-    
+
     return Collections.unmodifiableNavigableSet(
       this.agenda.subSet(_begin, true, _end, false)
     );
