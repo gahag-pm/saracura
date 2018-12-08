@@ -2,7 +2,9 @@ package br.ufmg.dcc.pm.saracura.ui.controls.agenda;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 import br.ufmg.dcc.pm.saracura.util.time.LocalDateUtil;
 
@@ -13,7 +15,7 @@ public class WeekAgenda extends Agenda {
 
 
 
-  public WeekAgenda(List<AgendaEvent> events) {
+  public WeekAgenda(List<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
     super(
       List.of(
         DayOfWeek.SUNDAY,
@@ -24,7 +26,7 @@ public class WeekAgenda extends Agenda {
         DayOfWeek.FRIDAY,
         DayOfWeek.SATURDAY
       ),
-      events
+      events, workDays, startTime, workHours
     );
 
     this.date = LocalDate.now();

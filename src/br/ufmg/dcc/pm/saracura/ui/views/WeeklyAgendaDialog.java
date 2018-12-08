@@ -3,9 +3,11 @@ package br.ufmg.dcc.pm.saracura.ui.views;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Window;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -30,7 +32,7 @@ public class WeeklyAgendaDialog extends JDialog {
 
 
 
-  public WeeklyAgendaDialog(Window parent, String owner, List<AgendaEvent> events) {
+  public WeeklyAgendaDialog(Window parent, String owner, List<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
     super(parent, "Agenda semanal de " + owner, ModalityType.APPLICATION_MODAL);
 
 
@@ -39,7 +41,7 @@ public class WeeklyAgendaDialog extends JDialog {
 
 
     this.events = events;
-    this.weekAgenda = new WeekAgenda(this.events);
+    this.weekAgenda = new WeekAgenda(this.events, workDays, startTime, workHours);
     this.weekControls = new JPanel(new FlowLayout());
     
     this.weekAgenda.addAgendaScheduledEventListener(e -> System.out.println(e.getAgendaEvent()));

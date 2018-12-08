@@ -2,16 +2,17 @@ package br.ufmg.dcc.pm.saracura.ui.controls.agenda;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 
 public class DayAgenda extends Agenda {
   private LocalDate date;
 
 
-
-  public DayAgenda(List<AgendaEvent> events) {
-    super(List.of(LocalDate.now().getDayOfWeek()), events);
+  public DayAgenda(List<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
+    super(List.of(LocalDate.now().getDayOfWeek()), events, workDays, startTime, workHours);
     this.date = LocalDate.now();
   }
 

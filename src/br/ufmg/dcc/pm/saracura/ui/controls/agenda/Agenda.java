@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.Timer;
@@ -44,6 +45,9 @@ public abstract class Agenda extends JComponent {
   protected double timeScale;
   protected double dayWidth;
   protected Graphics2D g2;
+  protected Set<DayOfWeek> workDays;
+  protected LocalTime startTime;
+  protected int workHours;
 
   protected abstract DayOfWeek getStartDay();
   protected abstract DayOfWeek getEndDay();
@@ -55,11 +59,12 @@ public abstract class Agenda extends JComponent {
   
   private EventListenerList listenerList = new EventListenerList();
 
-  public Agenda(List<DayOfWeek> week) {
-      this(week, new ArrayList<AgendaEvent>());
+  public Agenda(List<DayOfWeek> week, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
+      this(week, new ArrayList<AgendaEvent>(), workDays, startTime, workHours);
+
    }
   
-  protected Agenda(List<DayOfWeek> week, List<AgendaEvent> events) {
+  protected Agenda(List<DayOfWeek> week, List<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
     if (week == null)
       throw new IllegalArgumentException("week mustn't be null");
 
@@ -68,9 +73,24 @@ public abstract class Agenda extends JComponent {
 
     if (week.isEmpty())
       throw new IllegalArgumentException("week mustn't be empty");
+    
+    if(workDays == null)
+        throw new IllegalArgumentException("workdays mustn't be null");
+    
+    if(workDays.isEmpty())
+        throw new IllegalArgumentException("workdays mustn't be empty");
+    
+    if(startTime == null)
+        throw new IllegalArgumentException("startTime mustn't be null");
+    
+    if(workHours < 6 || workHours > 13)
+        throw new IllegalArgumentException("work hours must be between 6 and 13 inclusive");
 
     this.week = week;
     this.events = events;
+    this.workDays = workDays;
+    this.startTime = startTime;
+    this.workHours = workHours;
     
     setupEventListeners();
 
@@ -229,7 +249,6 @@ public abstract class Agenda extends JComponent {
         )
       );
 
-
       g2.drawString(text, x, 20);
     }
   }
@@ -285,6 +304,23 @@ public abstract class Agenda extends JComponent {
     g2.setColor(alphaGray);
     g2.fill(new Rectangle2D.Double(x, y, width, height));
     g2.setColor(origColor);
+  }
+  
+  private void drawWorkHours() {
+      final Color origColor = g2.getColor();
+      for(DayOfWeek wDay: this.workDays) {
+          final double x = dayToPixel(wDay);
+          double y = timeToPixel(this.startTime);
+          final double width = dayWidth;
+          final double height = timeToPixel(this.startTime.plusHours(this.workHours)) - timeToPixel(this.startTime);
+          
+          Color alphaGray = new Color(250, 250, 250, 90);
+          g2.setColor(alphaGray);
+          g2.fill(new Rectangle2D.Double(x, y, width, height));
+          
+          }
+      g2.setColor(origColor);
+      
   }
 
   private void drawCurrentTimeLine() {
@@ -367,7 +403,7 @@ public abstract class Agenda extends JComponent {
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
     // Set background to white
-    g2.setColor(Color.white);
+    g2.setColor(new Color(200,200,200));
     g2.fillRect(0, 0, getWidth(), getHeight());
 
     // Set paint colour to black
@@ -377,8 +413,10 @@ public abstract class Agenda extends JComponent {
     drawTodayShade();
     drawGrid();
     drawTimes();
+    drawWorkHours();
     drawEvents();
     drawCurrentTimeLine();
+    
   }
   
   
