@@ -1,6 +1,7 @@
 package br.ufmg.dcc.pm.saracura.clinic.payment;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import br.ufmg.dcc.pm.saracura.clinic.Clinic;
 
@@ -42,6 +43,12 @@ public class Debit implements Payment {
     if (chance == 0)
       return null;
 
-    return new Invoice(this.name, clinic.getName(), clinic.getNRLE(), value);
+    return new Invoice(
+      this.name,
+      clinic.getName(),
+      clinic.getNRLE(),
+      LocalDate.now(),
+      value
+    );
   }
 }

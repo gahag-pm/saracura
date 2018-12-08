@@ -17,7 +17,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.AbstractDocument;
 
-import br.ufmg.dcc.pm.saracura.ui.controls.money.CreditCardTextField;
+import br.ufmg.dcc.pm.saracura.ui.controls.NumericFilter;
 import br.ufmg.dcc.pm.saracura.ui.controls.money.MoneyTextField;
 
 /**
@@ -28,24 +28,17 @@ public class PaymentPlanDialog extends JDialog {
    * Whether the user dismissed the dialog by pressing the window's close button.
    */
   protected boolean dismissed = false;
-  /**
-   * Labels and text fields corresponding to name, register and value.
-   */
-  protected JLabel nameLabel;
-  protected JTextField nameField;
-  protected JLabel regLabel;
-  protected JTextField regField;
-  protected JLabel value;
+
+  protected JTextField nameTextField = new JTextField(14);
+
+  protected JTextField registrationNumberTextField = new JTextField(14) {{
+    ((AbstractDocument) getDocument()).setDocumentFilter(new NumericFilter());
+  }};
+
   protected MoneyTextField ATMInput = new MoneyTextField();
 
-  protected Dimension dimension = new Dimension(200, 75);
-  protected JButton cancelButton = new JButton("Cancelar") {{
-    setSize(dimension);
-    setMaximumSize(new Dimension(200, 75));
-    setAlignmentX(Component.CENTER_ALIGNMENT);
-  }};
   protected JButton confirmButton = new JButton("Ok") {{
-    setSize(dimension);
+    setSize(new Dimension(200, 75));
     setMaximumSize(new Dimension(200, 75));
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
@@ -60,45 +53,28 @@ public class PaymentPlanDialog extends JDialog {
   public PaymentPlanDialog(Window parent) {
     super(parent, "Pagamento em cheque", ModalityType.APPLICATION_MODAL);    
     
-    nameLabel = new JLabel("Nome:      ");
-    nameField = new JTextField(14);
-    regLabel = new JLabel("Registro: ");
-    regField = new JTextField(14);
-    ((AbstractDocument) regField.getDocument()).setDocumentFilter(new CreditCardTextField());
-    value = new JLabel("Valor:       ");
-    
-    this.cancelButton.addActionListener(e -> {
-        this.dismissed = true;
-        this.dispose();
-      });
 
-    this.confirmButton.addActionListener(e -> {
-        this.dispose();
-      });
+    this.confirmButton.addActionListener(e -> this.setVisible(false));
 
-    var panelButtons = new JPanel();
-    var panelFields = new JPanel();
+    var fieldsPanel = new JPanel();
+    fieldsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    fieldsPanel.add(new JLabel("Nome:     "));
+    fieldsPanel.add(this.nameTextField);
+    fieldsPanel.add(Box.createRigidArea(new Dimension(340, 5)));
+    fieldsPanel.add(new JLabel("Registro:"));
+    fieldsPanel.add(this.registrationNumberTextField);
+    fieldsPanel.add(Box.createRigidArea(new Dimension(340, 5)));
+    fieldsPanel.add(new JLabel("Valor:      "));
+    fieldsPanel.add(ATMInput);
+    fieldsPanel.add(Box.createRigidArea(new Dimension(340, 5)));
+
     var panel = new JPanel(new BorderLayout());
-
-    panelFields.setLayout(new FlowLayout(FlowLayout.LEFT));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
-    panelFields.add(nameLabel);
-    panelFields.add(nameField);
-    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
-    panelFields.add(regLabel);
-    panelFields.add(regField);
-    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
-    panelFields.add(value);
-    panelFields.add(ATMInput);
-    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
-    panelButtons.add(confirmButton);
-    panelButtons.add(cancelButton);
-
-    panelButtons.setSize(new Dimension(300, 75));
-    panel.add(panelFields);
-    panel.add(panelButtons, BorderLayout.SOUTH);
-
+    panel.add(fieldsPanel);
+    panel.add(confirmButton, BorderLayout.SOUTH);
     this.add(panel);
+
+
     this.setMinimumSize(new Dimension(300, 200));
     this.setResizable(false);
     this.setLocationRelativeTo(null);
@@ -125,23 +101,23 @@ public class PaymentPlanDialog extends JDialog {
   }
 
   /**
-   * Get the patient's name.
+   * Get the health plan's name.
    */
-  public String getNameFieldContent() {
-    return this.nameField.getText();
+  public String getSelectedName() {
+    return this.nameTextField.getText();
   }
 
   /**
-   * Get the patient's plan registration number.
+   * Get the patient's registration number.
    */
-  public String getRegFieldContent() {
-    return this.regField.getText();
+  public String getSelectedRegistration() {
+    return this.registrationNumberTextField.getText();
   }
 
   /**
-   * Get the money input.
+   * Get the monetary value.
    */
-  public BigDecimal getValue() {
+  public BigDecimal getSelectedValue() {
     return this.ATMInput.getValue();
   }
 

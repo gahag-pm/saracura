@@ -52,10 +52,11 @@ public class MoneyTextField extends JTextField {
    * A getter to the money input
    */
   public BigDecimal getValue() {
-    try{
+    try {
       BigDecimal value = new BigDecimal((this.format.parse(this.getText())).toString());
       return value;
-    }catch(Exception e){
+    }
+    catch(Exception e) {
       return null;
     }
   }

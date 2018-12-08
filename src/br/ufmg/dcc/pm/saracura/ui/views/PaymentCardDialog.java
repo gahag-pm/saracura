@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.AbstractDocument;
 
-import br.ufmg.dcc.pm.saracura.ui.controls.money.CreditCardTextField;
+import br.ufmg.dcc.pm.saracura.ui.controls.NumericFilter;
 import br.ufmg.dcc.pm.saracura.ui.controls.money.MoneyTextField;
 
 
@@ -26,14 +26,13 @@ public class PaymentCardDialog extends JDialog {
    * Whether the user dismissed the dialog by pressing the window's close button.
    */
   protected boolean dismissed = false;
-  /**
-   * Labels and text fields corresponding to name, value and number.
-   */
-  protected JLabel name;
-  protected JLabel value;
-  protected JLabel number;
-  protected JTextField numberTextField;
-  protected JTextField nameTextField;
+
+  protected JTextField cardNumberTextField = new JTextField(10) {{
+    ((AbstractDocument) getDocument()).setDocumentFilter(new NumericFilter());
+  }};
+
+  protected JTextField nameTextField = new JTextField(10);
+
   protected MoneyTextField ATMInput = new MoneyTextField();
 
   protected JButton confirmButton = new JButton("Ok") {{
@@ -51,41 +50,32 @@ public class PaymentCardDialog extends JDialog {
    */
   public PaymentCardDialog (Window parent) {
     super(parent, "Pagamento em cartão", ModalityType.APPLICATION_MODAL);
-    name = new JLabel("Nome:");
-    name.setSize(name.getPreferredSize());
-    value = new JLabel("Valor:");
-    value.setSize(value.getPreferredSize());
-    number = new JLabel("Número do Cartão:");
-    number.setSize(number.getPreferredSize());
 
-    numberTextField = new JTextField(10);
-    ((AbstractDocument) numberTextField.getDocument()).setDocumentFilter(new CreditCardTextField());
-    nameTextField = new JTextField(10);
 
-    this.confirmButton.addActionListener(e -> {
-        this.dispose();
-      });
+    this.confirmButton.addActionListener(e -> this.setVisible(false));
 
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
-    panel.add(name);
+    panel.add(new JLabel("Nome:"));
     panel.add(nameTextField);
-    panel.add(value);
+    panel.add(new JLabel("Valor:"));
     panel.add(ATMInput);
-    panel.add(number);
-    panel.add(numberTextField);
+    panel.add(new JLabel("Número do Cartão:"));
+    panel.add(cardNumberTextField);
     panel.add(Box.createRigidArea(new Dimension(10, 15)));
     panel.add(confirmButton);
     panel.setPreferredSize(new Dimension(280, 180));
-
     this.add(panel);
+
+
     this.pack();
     this.setSize(new Dimension(280, 200));
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
+
 
 
   @Override
@@ -106,23 +96,23 @@ public class PaymentCardDialog extends JDialog {
   }
 
   /**
-   * Get the patient's name.
+   * Get the card owner's name.
    */
-  public String getNameFieldContent() {
+  public String getSelectedName() {
     return this.nameTextField.getText();
   }
 
   /**
-   * Get the patient's credit card's number.
+   * Get the credit card's number.
    */
-  public String getNumberFieldContent() {
-    return this.numberTextField.getText();
+  public String getSelectedNumber() {
+    return this.cardNumberTextField.getText();
   }
 
   /**
-   * Get the money input.
+   * Get the monetary value.
    */
-  public BigDecimal getSelected() {
+  public BigDecimal getSelectedValue() {
     return this.ATMInput.getValue();
   }
 

@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 
 import br.ufmg.dcc.pm.saracura.ui.controls.money.MoneyTextField;
 
+
 /**
  * A dialog with the cash payment.
  */
@@ -25,13 +26,13 @@ public class PaymentCashDialog extends JDialog {
    */
   protected boolean dismissed = false;
 
+  protected MoneyTextField ATMInput = new MoneyTextField();
+
   protected JButton confirmButton = new JButton("Ok") {{
     setSize(new Dimension(200, 75));
     setMaximumSize(new Dimension(200, 75));
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
-
-  MoneyTextField ATMInput = new MoneyTextField();
 
 
 
@@ -43,35 +44,31 @@ public class PaymentCashDialog extends JDialog {
   public PaymentCashDialog(Window parent) {
     super(parent, "Pagamento em dinheiro", ModalityType.APPLICATION_MODAL);
 
-    JPanel panel = new JPanel();
-    JPanel labelPanel = new JPanel();
+
+    this.confirmButton.addActionListener(e -> this.setVisible(false));
+
     JLabel myLabel = new JLabel("Digite o valor:");
-
-    // this.cancelButton.addActionListener(e -> {
-    //     this.dismissed = true;
-    //     this.dispose();
-    //   });
-
-    this.confirmButton.addActionListener(e -> {
-        this.dispose();
-      });
-
-    panel.setLayout(new BorderLayout());
-    panel.setBorder(new EmptyBorder(10, 20, 15, 20));
     myLabel.setSize(myLabel.getPreferredSize());
+
+    JPanel labelPanel = new JPanel();
     labelPanel.add(myLabel);
     labelPanel.add(ATMInput);
 
+    JPanel panel = new JPanel();
+    panel.setLayout(new BorderLayout());
+    panel.setBorder(new EmptyBorder(10, 20, 15, 20));
     panel.add(labelPanel, BorderLayout.NORTH);
     panel.add(confirmButton, BorderLayout.SOUTH);
-
     this.add(panel);
+
+
     this.pack();
     this.setSize(new Dimension(280, 120));
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
+
 
 
   @Override
@@ -92,9 +89,9 @@ public class PaymentCashDialog extends JDialog {
   }
 
   /**
-   * Get the money input.
+   * Get the monetary value.
    */
-  public BigDecimal getSelected() {
+  public BigDecimal getSelectedValue() {
     return this.ATMInput.getValue();
   }
 

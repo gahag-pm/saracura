@@ -1,6 +1,7 @@
 package br.ufmg.dcc.pm.saracura.clinic.payment;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import br.ufmg.dcc.pm.saracura.clinic.Clinic;
 
@@ -50,6 +51,7 @@ public class HealthPlan implements Payment {
       this.name + " " + this.registration,
       clinic.getName(),
       clinic.getNRLE(),
+      LocalDate.now(),
       value
     );
   }

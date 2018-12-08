@@ -1,28 +1,29 @@
 package br.ufmg.dcc.pm.saracura.clinic.payment;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import br.ufmg.dcc.pm.saracura.clinic.Clinic;
 
 
 public class Check implements Payment {
   /**
-   * The payee's name.
+   * The payer's name.
    */
-  public final String payee;
+  public final String payer;
 
 
 
   /**
    * Create a check payment.
-   * @param payee the payee's naem, mustn't be null
+   * @param payer the payer's name, mustn't be null
    */
-  public Check(String payee) {
-    if (payee == null)
-      throw new IllegalArgumentException("payee mustn't be null");
+  public Check(String payer) {
+    if (payer == null)
+      throw new IllegalArgumentException("payer mustn't be null");
 
 
-    this.payee = payee;
+    this.payer = payer;
   }
 
 
@@ -33,6 +34,12 @@ public class Check implements Payment {
     if (chance == 0)
       return null;
 
-    return new Invoice(this.payee, clinic.getName(), clinic.getNRLE(), value);
+    return new Invoice(
+      this.payer,
+      clinic.getName(),
+      clinic.getNRLE(),
+      LocalDate.now(),
+      value
+    );
   }
 }

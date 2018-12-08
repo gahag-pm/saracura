@@ -27,22 +27,13 @@ public class PaymentCheckDialog extends JDialog {
    * Whether the user dismissed the dialog by pressing the window's close button.
    */
   protected boolean dismissed = false;
-  /**
-   * Labels and text fields corresponding to name, register and value.
-   */
-  protected JLabel nameLabel;
-  protected JTextField nameField;
-  protected JLabel valueLabel;
+
+  protected JTextField nameField = new JTextField(14);
+
   protected MoneyTextField ATMInput = new MoneyTextField();
 
-  protected Dimension dimension = new Dimension(200, 75);
-  protected JButton cancelButton = new JButton("Cancelar") {{
-    setSize(dimension);
-    setMaximumSize(new Dimension(200, 75));
-    setAlignmentX(Component.CENTER_ALIGNMENT);
-  }};
   protected JButton confirmButton = new JButton("Ok") {{
-    setSize(dimension);
+    setSize(new Dimension(200, 75));
     setMaximumSize(new Dimension(200, 75));
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
@@ -57,45 +48,31 @@ public class PaymentCheckDialog extends JDialog {
   public PaymentCheckDialog(Window parent) {
     super(parent, "Pagamento em cheque", ModalityType.APPLICATION_MODAL);
 
-    nameLabel = new JLabel("Nome: ");
-    nameField = new JTextField(14);
-    valueLabel = new JLabel("Valor: ");
 
+    this.confirmButton.addActionListener(e -> this.setVisible(false));
 
-    var panelButtons = new JPanel();
-    var panelFields = new JPanel();
+    var fieldsPanel = new JPanel();
+    fieldsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    fieldsPanel.add(new JLabel("Nome: "));
+    fieldsPanel.add(nameField);
+    fieldsPanel.add(Box.createRigidArea(new Dimension(340, 5)));
+    fieldsPanel.add(new JLabel("Valor: "));
+    fieldsPanel.add(ATMInput);
+    fieldsPanel.add(Box.createRigidArea(new Dimension(340, 5)));
+
     var panel = new JPanel(new BorderLayout());
-
-    this.cancelButton.addActionListener(e -> {
-        this.dismissed = true;
-        this.dispose();
-      });
-
-    this.confirmButton.addActionListener(e -> {
-        this.dispose();
-      });
-
-    panelFields.setLayout(new FlowLayout(FlowLayout.LEFT));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
-    panelFields.add(nameLabel);
-    panelFields.add(nameField);
-    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
-    panelFields.add(valueLabel);
-    panelFields.add(ATMInput);
-    panelFields.add(Box.createRigidArea(new Dimension(340, 5)));
-    panelButtons.add(confirmButton);
-    panelButtons.add(cancelButton);
-
-    panelButtons.setSize(new Dimension(300, 75));
-    panel.add(panelFields);
-    panel.add(panelButtons, BorderLayout.SOUTH);
-
+    panel.add(fieldsPanel);
+    panel.add(confirmButton, BorderLayout.SOUTH);
     this.add(panel);
+
+
     this.setMinimumSize(new Dimension(300,170));
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
   }
+
 
 
   @Override
@@ -116,16 +93,16 @@ public class PaymentCheckDialog extends JDialog {
   }
 
   /**
-   * Get the patient's name.
+   * Get the check's name.
    */
-  public String getNameFieldContent() {
+  public String getSelectedName() {
     return this.nameField.getText();
   }
 
   /**
-   * Get the money input.
+   * Get the monetary value.
    */
-  public BigDecimal getValue() {
+  public BigDecimal getSelectedValue() {
     return this.ATMInput.getValue();
   }
 

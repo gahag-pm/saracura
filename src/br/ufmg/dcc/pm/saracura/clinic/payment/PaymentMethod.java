@@ -2,7 +2,8 @@ package br.ufmg.dcc.pm.saracura.clinic.payment;
 
 
 public enum PaymentMethod {
-  CARD,
+  CREDIT,
+  DEBIT,
   CASH,
   CHECK,
   HEALTH_PLAN

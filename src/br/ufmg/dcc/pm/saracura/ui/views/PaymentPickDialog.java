@@ -35,7 +35,13 @@ public class PaymentPickDialog extends JDialog {
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
 
-  protected JRadioButton cardButton = new JRadioButton("Cartão") {{
+  protected JRadioButton creditButton = new JRadioButton("Crédito") {{
+    setSize(buttonDimension);
+    setMaximumSize(buttonDimension);
+    setAlignmentX(Component.CENTER_ALIGNMENT);
+  }};
+
+  protected JRadioButton debitButton = new JRadioButton("Débito") {{
     setSize(buttonDimension);
     setMaximumSize(buttonDimension);
     setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -69,24 +75,26 @@ public class PaymentPickDialog extends JDialog {
   public PaymentPickDialog(Window parent) {
     super(parent, "Forma de pagamento", ModalityType.APPLICATION_MODAL);
 
+
     ButtonGroup group = new ButtonGroup();
-    group.add(this.cashButton);
-    group.add(this.checkButton);
-    group.add(this.cardButton);
     group.add(this.healthPlanButton);
+    group.add(this.creditButton);
+    group.add(this.debitButton);
+    group.add(this.checkButton);
+    group.add(this.cashButton);
 
     this.healthPlanButton.setSelected(true);
 
-    this.confirmButton.addActionListener(e -> {
-        this.dispose();
-      });
+    this.confirmButton.addActionListener(e -> this.setVisible(false));
 
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
     panel.add(this.healthPlanButton);
     panel.add(Box.createRigidArea(new Dimension(10,10)));
-    panel.add(this.cardButton);
+    panel.add(this.creditButton);
+    panel.add(Box.createRigidArea(new Dimension(10,10)));
+    panel.add(this.debitButton);
     panel.add(Box.createRigidArea(new Dimension(10,10)));
     panel.add(this.checkButton);
     panel.add(Box.createRigidArea(new Dimension(10,10)));
@@ -95,8 +103,9 @@ public class PaymentPickDialog extends JDialog {
     panel.add(this.confirmButton);
     this.add(panel);
 
+
     this.pack();
-    this.setSize(new Dimension(280, 212));
+    this.setSize(new Dimension(280, 242));
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -128,8 +137,11 @@ public class PaymentPickDialog extends JDialog {
     if (this.cashButton.isSelected())
       return PaymentMethod.CASH;
 
-    if (this.cardButton.isSelected())
-      return PaymentMethod.CARD;
+    if (this.creditButton.isSelected())
+      return PaymentMethod.CREDIT;
+
+    if (this.debitButton.isSelected())
+      return PaymentMethod.DEBIT;
 
     if (this.healthPlanButton.isSelected())
       return PaymentMethod.HEALTH_PLAN;
@@ -137,7 +149,7 @@ public class PaymentPickDialog extends JDialog {
     if (this.checkButton.isSelected())
       return PaymentMethod.CHECK;
 
-    return null; // This should never happen.
+    throw new RuntimeException(); // This should never happen.
   }
 
   /**

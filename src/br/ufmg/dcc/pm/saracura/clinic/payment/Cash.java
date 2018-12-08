@@ -1,6 +1,7 @@
 package br.ufmg.dcc.pm.saracura.clinic.payment;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import br.ufmg.dcc.pm.saracura.clinic.Clinic;
 
@@ -28,6 +29,12 @@ public class Cash implements Payment {
 
 
   public Invoice pay(Clinic clinic, BigDecimal value) {
-    return new Invoice(this.name, clinic.getName(), clinic.getNRLE(), value);
+    return new Invoice(
+      this.name,
+      clinic.getName(),
+      clinic.getNRLE(),
+      LocalDate.now(),
+      value
+    );
   }
 }
