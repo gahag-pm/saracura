@@ -28,7 +28,7 @@ public class PatientRegisterController implements Controller<Void> {
     dialog.setConfirmAction(e -> {
       if(dialog.getSelectedName().isEmpty()){
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Insira um nome válido!",
           "NOME INVÁLIDO",
           JOptionPane.WARNING_MESSAGE
@@ -38,7 +38,7 @@ public class PatientRegisterController implements Controller<Void> {
 
       if(dialog.getSelectedNin().isEmpty()){
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Insira um CPF válido!",
           "CPF INVÁLIDO",
           JOptionPane.WARNING_MESSAGE

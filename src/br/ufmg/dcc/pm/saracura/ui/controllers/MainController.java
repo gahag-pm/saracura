@@ -1,8 +1,8 @@
 package br.ufmg.dcc.pm.saracura.ui.controllers;
 
-import br.ufmg.dcc.pm.saracura.ui.views.MainWindow;
+import java.awt.Window;
 
-import java.awt.*;
+import br.ufmg.dcc.pm.saracura.ui.views.MainWindow;
 
 
 public class MainController implements Controller<Void> {

@@ -10,6 +10,7 @@ import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,15 +45,16 @@ public class DoctorRegisterDialog extends JDialog {
   /**
    * The work days listed - listing string : DayOfWeek
    */
-  protected static final Map<String, DayOfWeek> workDays = Map.of(
-    "Domingo"      , DayOfWeek.SUNDAY,
-    "Segunda-feira", DayOfWeek.MONDAY,
-    "Terça-feira"  , DayOfWeek.TUESDAY,
-    "Quarta-feira" , DayOfWeek.WEDNESDAY,
-    "Quinta-feira" , DayOfWeek.THURSDAY,
-    "Sexta-feira"  , DayOfWeek.FRIDAY,
-    "Sabado"       , DayOfWeek.SATURDAY
-  );
+  protected static final Map<String, DayOfWeek> workDays = new LinkedHashMap<>() {{
+    put("Domingo"      , DayOfWeek.SUNDAY);
+    put("Segunda-feira", DayOfWeek.MONDAY);
+    put("Terça-feira"  , DayOfWeek.TUESDAY);
+    put("Quarta-feira" , DayOfWeek.WEDNESDAY);
+    put("Quinta-feira" , DayOfWeek.THURSDAY);
+    put("Sexta-feira"  , DayOfWeek.FRIDAY);
+    put("Sabado"       , DayOfWeek.SATURDAY);
+  }};
+
 
 
   protected boolean dismissed = false;
@@ -202,7 +204,7 @@ public class DoctorRegisterDialog extends JDialog {
   /**
    * Get the selected work days.
    */
-  public Set<DayOfWeek> getSelectedWorkdays() {
+  public Set<DayOfWeek> getSelectedWorkDays() {
     List<String> values = this.workDaysList.getSelectedValuesList();
     return values.stream().map(wd -> workDays.get(wd)).collect(Collectors.toSet());
   }

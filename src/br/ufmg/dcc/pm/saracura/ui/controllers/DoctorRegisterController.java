@@ -34,7 +34,7 @@ public class DoctorRegisterController implements Controller<Void> {
 
       if (dialog.getSelectedName().isEmpty()) {
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Insira um nome válido!",
           "NOME INVÁLIDO",
           JOptionPane.WARNING_MESSAGE
@@ -44,7 +44,7 @@ public class DoctorRegisterController implements Controller<Void> {
 
       if (dialog.getSelectedCrm().isEmpty()) {
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Insira um CRM válido!",
           "CRM INVÁLIDO",
           JOptionPane.WARNING_MESSAGE
@@ -54,7 +54,7 @@ public class DoctorRegisterController implements Controller<Void> {
 
       if (dialog.getSelectedSpecialties().isEmpty()) {
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Selecione ao menos uma especialidade!",
           "ESPECIALIDADE INVÁLIDA",
           JOptionPane.WARNING_MESSAGE
@@ -62,9 +62,9 @@ public class DoctorRegisterController implements Controller<Void> {
         return;
       }
 
-      if (dialog.getSelectedWorkdays().isEmpty()) {
+      if (dialog.getSelectedWorkDays().isEmpty()) {
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Selecione ao menos um dia de trabalho!",
           "JORNADA DE TRABALHO INVÁLIDA",
           JOptionPane.WARNING_MESSAGE
@@ -74,7 +74,7 @@ public class DoctorRegisterController implements Controller<Void> {
 
       if (startTime == null) {
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Horário de início de expediente inválido!",
           "INÍCIO EXPEDIENTE INVÁLIDO",
           JOptionPane.WARNING_MESSAGE
@@ -84,7 +84,7 @@ public class DoctorRegisterController implements Controller<Void> {
 
       if (dayDuration == null || dayDuration == Duration.ZERO) {
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Duração de expediente inválida!",
           "DURAÇÃO EXPEDIENTE INVÁLIDO",
           JOptionPane.WARNING_MESSAGE
@@ -94,7 +94,7 @@ public class DoctorRegisterController implements Controller<Void> {
 
       if (appointmentDuration == null || appointmentDuration == Duration.ZERO) {
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Duração de consulta inválida!",
           "DURAÇÃO CONSULTA INVÁLIDO",
           JOptionPane.WARNING_MESSAGE
@@ -104,7 +104,7 @@ public class DoctorRegisterController implements Controller<Void> {
 
       if (LocalTimeUtil.checkOverflow(startTime, dayDuration)) {
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "O dia de trabalho não pode extrapolar 23:59!",
           "EXPEDIENTE INVÁLIDO",
           JOptionPane.WARNING_MESSAGE
@@ -114,7 +114,7 @@ public class DoctorRegisterController implements Controller<Void> {
 
       if (appointmentDuration.compareTo(dayDuration) > 0) {
         JOptionPane.showMessageDialog(
-          parent,
+          dialog,
           "Duração de consulta não pode extrapolar o expediente!",
           "DURAÇÃO CONSULTA INVÁLIDO",
           JOptionPane.WARNING_MESSAGE
@@ -137,7 +137,7 @@ public class DoctorRegisterController implements Controller<Void> {
           dialog.getSelectedAppointmentDuration(),
           dialog.getSelectedStartTime(),
           dialog.getSelectedDayDuration(),
-          dialog.getSelectedWorkdays()
+          dialog.getSelectedWorkDays()
         )
       );
 
