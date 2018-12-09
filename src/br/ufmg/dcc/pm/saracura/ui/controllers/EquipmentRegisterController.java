@@ -1,22 +1,20 @@
 package br.ufmg.dcc.pm.saracura.ui.controllers;
 
+import java.awt.Window;
+import java.time.Duration;
+
+import javax.swing.JOptionPane;
+
 import br.ufmg.dcc.pm.saracura.clinic.Clinic;
 import br.ufmg.dcc.pm.saracura.clinic.Equipment;
-import br.ufmg.dcc.pm.saracura.clinic.Exam;
 import br.ufmg.dcc.pm.saracura.ui.views.EquipmentRegisterDialog;
-
-import javax.swing.*;
-import java.awt.*;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import br.ufmg.dcc.pm.saracura.util.time.LocalTimeUtil;
 
 
 public class EquipmentRegisterController implements Controller<Void> {
   protected Clinic clinic;
+
+
 
   public EquipmentRegisterController(Clinic clinic) {
     if (clinic == null) {
@@ -25,149 +23,102 @@ public class EquipmentRegisterController implements Controller<Void> {
     this.clinic = clinic;
   }
 
+
+
   public Void execute(Window parent) {
+    var dialog = new EquipmentRegisterDialog(parent);
+    dialog.setConfirmAction(e -> {
+      var startTime = dialog.getSelectedStartTime();
+      var dayDuration = dialog.getSelectedDayDuration();
+      var appointmentDuration = dialog.getSelectedAppointmentDuration();
 
-    Exam exam;
-    Duration appointmentDuration;
-    LocalTime startTime;
-    Duration dayDuration;
-    Set<DayOfWeek> workDays;
-
-    var equipmentRegisterDialog = new EquipmentRegisterDialog(parent);
-
-    equipmentRegisterDialog.setVisible(true);
-
-    if (!equipmentRegisterDialog.isDismissed()) {
-      /**
-       * Checks if at least one exam has been selected
-       */
-      if (equipmentRegisterDialog.getSelectedExam() == null) {
-        JOptionPane.showMessageDialog(parent,
-                "Selecione um tipo de exame!",
-                "EXAME INVÁLIDO",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else {
-        exam = null;
-        String temp = equipmentRegisterDialog.getSelectedExam();
-        for (Exam tempExam : Exam.values()) {
-          if (temp.equals(Exam.textMap.get(tempExam))) {
-            exam = tempExam;
-            break;
-          }
-        }
+      if (dialog.getSelectedExam() == null) {
+        JOptionPane.showMessageDialog(
+          dialog,
+          "Selecione o tipo de exame!",
+          "EXAME INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
       }
 
-      /**
-       * Checks if at least one work day has been selected
-       */
-      if (equipmentRegisterDialog.getSelectedWorkdays().isEmpty()) {
-        JOptionPane.showMessageDialog(parent,
-                "Selecione ao menos um dia de funcionamento!",
-                "JORNADA DE TRABALHO INVÁLIDA",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else {
-        workDays = new TreeSet<>();
-        Iterator<String> days = equipmentRegisterDialog.getSelectedWorkdays().iterator();
-        while (days.hasNext()) {
-          String temp = days.next();
-          switch (temp) {
-            case "Domingo":
-              workDays.add(DayOfWeek.SUNDAY);
-              break;
-            case "Segunda-feira":
-              workDays.add(DayOfWeek.MONDAY);
-              break;
-            case "Terça-feira":
-              workDays.add(DayOfWeek.TUESDAY);
-              break;
-            case "Quarta-feira":
-              workDays.add(DayOfWeek.WEDNESDAY);
-              break;
-            case "Quinta-feira":
-              workDays.add(DayOfWeek.THURSDAY);
-              break;
-            case "Sexta-feira":
-              workDays.add(DayOfWeek.FRIDAY);
-              break;
-            case "Sábado":
-              workDays.add(DayOfWeek.SATURDAY);
-              break;
-          }
-        }
-      }
-      /**
-       * Checks if start time hours and minutes is within normal day and hour range
-       * Hour cannot be higher than 23 and cannot be negative
-       * Minutes cannot be higher than 59 and cannot be negative
-       */
-      if (equipmentRegisterDialog.getStartTimeHours() > 23 || equipmentRegisterDialog.getStartTimeHours() < 0) {
-        JOptionPane.showMessageDialog(parent,
-                "Hora de início de funcionamento inválida!",
-                "INÍCIO FUNCIONAMENTO INVÁLIDO",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else if (equipmentRegisterDialog.getStartTimeMinutes() > 59 || equipmentRegisterDialog.getStartTimeMinutes() < 0) {
-        JOptionPane.showMessageDialog(parent,
-                "Minutos de início de funcionamento inválido!",
-                "INÍCIO FUNCIONAMENTO INVÁLIDO",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else {
-        startTime = LocalTime.of(equipmentRegisterDialog.getStartTimeHours(), equipmentRegisterDialog.getStartTimeMinutes());
-      }
-      /**
-       * Checks if equipment day duration hours and minutes is within normal day and hour range
-       * Hour cannot be higher than 23 and cannot be negative
-       * Minutes cannot be higher than 59 and cannot be negative
-       */
-      if (equipmentRegisterDialog.getDayDurationHours() > 23 || equipmentRegisterDialog.getDayDurationHours() < 0) {
-        JOptionPane.showMessageDialog(parent,
-                "Hora de duração de funcionamentp inválida!",
-                "DURAÇÃO FUNCIONAMENTO INVÁLIDO",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else if (equipmentRegisterDialog.getDayDurationMinutes() > 59 || equipmentRegisterDialog.getDayDurationMinutes() < 0) {
-        JOptionPane.showMessageDialog(parent,
-                "Minutos de duração de funcionamento inválido!",
-                "DURAÇÃO FUNCIONAMENTO INVÁLIDO",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else {
-        dayDuration = Duration.ofHours(equipmentRegisterDialog.getDayDurationHours()).plus(Duration.ofMinutes(equipmentRegisterDialog.getDayDurationMinutes()));
-      }
-      /**
-       * Checks if equipment appointment duration hours and minutes is within normal day and hour range
-       * Hour cannot be higher than 23 and cannot be negative
-       * Minutes cannot be higher than 59 and cannot be negative
-       */
-      if (equipmentRegisterDialog.getAppointmentDurationHours() > 23 || equipmentRegisterDialog.getAppointmentDurationHours() < 0) {
-        JOptionPane.showMessageDialog(parent,
-                "Hora de duração de exame inválida!",
-                "DURAÇÃO EXAME INVÁLIDO",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else if (equipmentRegisterDialog.getAppointmentDurationMinutes() > 59 || equipmentRegisterDialog.getAppointmentDurationMinutes() < 0) {
-        JOptionPane.showMessageDialog(parent,
-                "Minutos de duração de exame inválido!",
-                "DURAÇÃO EXAME INVÁLIDO",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else {
-        appointmentDuration = Duration.ofHours(equipmentRegisterDialog.getAppointmentDurationHours()).plus(Duration.ofMinutes(equipmentRegisterDialog.getAppointmentDurationMinutes()));
+      if (dialog.getSelectedWorkDays().isEmpty()) {
+        JOptionPane.showMessageDialog(
+          dialog,
+          "Selecione ao menos um dia de funcionamento!",
+          "DIA DE FUNCIONAMENTO INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
       }
 
-      clinic.addEquipment(new Equipment(
-                      exam,
-                      appointmentDuration,
-                      startTime,
-                      dayDuration,
-                      workDays
-      ));
-    }
+      if (startTime == null) {
+        JOptionPane.showMessageDialog(
+          dialog,
+          "Horário de início de expediente inválido!",
+          "INÍCIO EXPEDIENTE INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
+      }
 
-    equipmentRegisterDialog.dispose();
+      if (dayDuration == null || dayDuration == Duration.ZERO) {
+        JOptionPane.showMessageDialog(
+          dialog,
+          "Duração de expediente inválida!",
+          "DURAÇÃO EXPEDIENTE INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
+      }
+
+      if (appointmentDuration == null || appointmentDuration == Duration.ZERO) {
+        JOptionPane.showMessageDialog(
+          dialog,
+          "Duração de exame inválida!",
+          "DURAÇÃO EXAME INVÁLIDA",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
+      }
+
+      if (LocalTimeUtil.checkOverflow(startTime, dayDuration)) {
+        JOptionPane.showMessageDialog(
+          dialog,
+          "O horário de funcionamento não pode extrapolar 23:59!",
+          "EXPEDIENTE INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
+      }
+
+      if (appointmentDuration.compareTo(dayDuration) > 0) {
+        JOptionPane.showMessageDialog(
+          dialog,
+          "Duração de exame não pode extrapolar o expediente!",
+          "DURAÇÃO CONSULTA INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
+      }
+
+
+      dialog.setVisible(false);
+    });
+    dialog.setVisible(true);
+
+
+    if (!dialog.getDismissed())
+      clinic.addEquipment(
+        new Equipment(
+          dialog.getSelectedExam(),
+          dialog.getSelectedAppointmentDuration(),
+          dialog.getSelectedStartTime(),
+          dialog.getSelectedDayDuration(),
+          dialog.getSelectedWorkDays()
+        )
+      );
+
 
     return null;
   }
