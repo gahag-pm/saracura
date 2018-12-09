@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,6 +42,8 @@ public class PaymentCheckDialog extends JDialog {
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
 
+  protected ActionListener confirmButtonAction = e -> this.setVisible(false);
+
   protected DatePickerSettings set;
   protected DatePicker picker;
   protected CalendarPanel calendarPanel;
@@ -66,9 +69,10 @@ public class PaymentCheckDialog extends JDialog {
     calendarPanel = new CalendarPanel(picker);
 
     calendarPanel.setSelectedDate(LocalDate.now());
+    picker.setDateToToday();
     cPanel.add(calendarPanel, CC.xy(2, 2));
 
-    this.confirmButton.addActionListener(e -> this.setVisible(false));
+    this.confirmButton.addActionListener(e -> this.confirmButtonAction.actionPerformed(e));
 
     var atmPanel = new JPanel();
     atmPanel.setLayout(new BoxLayout(atmPanel, BoxLayout.PAGE_AXIS));
@@ -116,6 +120,17 @@ public class PaymentCheckDialog extends JDialog {
       this.dismissed = false;
 
     super.setVisible(b);
+  }
+
+  /**
+   * Set the confirm button's action.
+   * @param action the action, mustn't be null
+   */
+  public void setConfirmAction(ActionListener action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
+    this.confirmButtonAction = action;
   }
 
   /**

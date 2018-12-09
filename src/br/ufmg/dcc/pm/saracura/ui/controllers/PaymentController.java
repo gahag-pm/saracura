@@ -16,11 +16,7 @@ import br.ufmg.dcc.pm.saracura.clinic.payment.HealthPlan;
 import br.ufmg.dcc.pm.saracura.clinic.payment.Invoice;
 import br.ufmg.dcc.pm.saracura.clinic.payment.Payment;
 import br.ufmg.dcc.pm.saracura.clinic.payment.PaymentMethod;
-import br.ufmg.dcc.pm.saracura.ui.views.PaymentCardDialog;
-import br.ufmg.dcc.pm.saracura.ui.views.PaymentCashDialog;
-import br.ufmg.dcc.pm.saracura.ui.views.PaymentCheckDialog;
 import br.ufmg.dcc.pm.saracura.ui.views.PaymentPickDialog;
-import br.ufmg.dcc.pm.saracura.ui.views.PaymentPlanDialog;
 
 
 public class PaymentController implements Controller<Invoice> {
@@ -60,12 +56,13 @@ public class PaymentController implements Controller<Invoice> {
     if (paymentPickDialog.getDismissed())
       return cancel.get();
 
+
     switch (paymentPickDialog.getSelected()) {
     case CHECK:
-      var checkDialog = new PaymentCheckDialog(paymentPickDialog);
+      var checkDialog = PaymentDialogFactory.createCheckDialog(paymentPickDialog);
       checkDialog.setVisible(true);
 
-      if (!checkDialog.getDismissed())
+      if (checkDialog.getDismissed())
         return cancel.get();
 
       return new Check(this.patient.name, checkDialog.getSelectedDate()).pay(
@@ -75,7 +72,7 @@ public class PaymentController implements Controller<Invoice> {
 
 
     case HEALTH_PLAN:
-      var planDialog = new PaymentPlanDialog(paymentPickDialog);
+      var planDialog = PaymentDialogFactory.createPlanDialog(paymentPickDialog);
       planDialog.setVisible(true);
 
       if (planDialog.getDismissed())
@@ -91,7 +88,7 @@ public class PaymentController implements Controller<Invoice> {
 
 
     case CASH:
-      var cashDialog = new PaymentCashDialog(paymentPickDialog);
+      var cashDialog = PaymentDialogFactory.createCashDialog(paymentPickDialog);
       cashDialog.setVisible(true);
 
       if (cashDialog.getDismissed())
@@ -102,7 +99,7 @@ public class PaymentController implements Controller<Invoice> {
 
     case CREDIT:
     case DEBIT:
-      var cardDialog = new PaymentCardDialog(paymentPickDialog);
+      var cardDialog = PaymentDialogFactory.createCardDialog(paymentPickDialog);
       cardDialog.setVisible(true);
 
       if (cardDialog.getDismissed())
