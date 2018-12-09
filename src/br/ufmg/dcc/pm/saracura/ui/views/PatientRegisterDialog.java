@@ -1,88 +1,113 @@
 package br.ufmg.dcc.pm.saracura.ui.views;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Window;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
 
 
 public class PatientRegisterDialog extends JDialog {
+  /**
+   * Whether the user dismissed the dialog by pressing the window's close button.
+   */
+  protected boolean dismissed = false;
 
-    protected boolean dismissed = false;
-
-    protected JLabel nameLabel;
-    protected JTextField nameField;
-    protected JLabel ninLabel;
-    protected JTextField ninField;
+  protected final JTextField nameTextField = new JTextField(20);
+  protected final JTextField ninTextField = new JTextField(20);
 
 
-    protected final Dimension dButton = new Dimension(250, 75);
-    protected final JButton confirmButton = new JButton("Confirmar") {{
-        setSize(dButton);
-        setMaximumSize(dButton);
-        setAlignmentX(Component.CENTER_ALIGNMENT);
-    }};
+  protected final Dimension dButton = new Dimension(250, 75);
+  protected final JButton confirmButton = new JButton("Confirmar") {{
+    setSize(dButton);
+    setMaximumSize(dButton);
+    setAlignmentX(Component.CENTER_ALIGNMENT);
+  }};
 
-    protected final JButton cancelButton = new JButton("Cancelar") {{
-        setSize(dButton);
-        setMaximumSize(dButton);
-        setAlignmentX(Component.CENTER_ALIGNMENT);
-    }};
+  protected ActionListener confirmButtonAction = e -> this.setVisible(false);
 
 
 
-    public PatientRegisterDialog(Window parent) {
-        super(parent, "Novo Paciente", ModalityType.APPLICATION_MODAL);
+  public PatientRegisterDialog(Window parent) {
+    super(parent, "Novo Paciente", ModalityType.APPLICATION_MODAL);
 
-        var panel = new JPanel(new FlowLayout());
-        nameLabel = new JLabel("Nome: ");
-        nameField = new JTextField(20);
-        ninLabel = new JLabel("    CPF: ");
-        ninField = new JTextField(20);
 
-        this.cancelButton.addActionListener(e -> {
-            this.dismissed = true;
-            this.dispose();
-        });
+    this.confirmButton.addActionListener(e -> this.confirmButtonAction.actionPerformed(e));
 
-        this.confirmButton.addActionListener(e -> {
-            this.dispose();
-        });
+    var panel = new JPanel(new FlowLayout());
+    panel.setBorder(new EmptyBorder(10, 20, 15, 20));
+    panel.add(new JLabel("Nome: "));
+    panel.add(nameTextField);
+    panel.add(new JLabel("    CPF: "));
+    panel.add(ninTextField);
+    panel.add(Box.createRigidArea(new Dimension(340, 5)));
+    panel.add(confirmButton);
+    this.add(panel);
 
-        panel.setBorder(new EmptyBorder(10, 20, 15, 20));
-        panel.add(nameLabel);
-        panel.add(nameField);
-        panel.add(ninLabel);
-        panel.add(ninField);
-        panel.add(Box.createRigidArea(new Dimension(340, 5)));
-        panel.add(confirmButton);
-        panel.add(cancelButton);
 
-        this.add(panel);
+    this.setMinimumSize(new Dimension(340,140));
+    this.setResizable(false);
+    this.setLocationRelativeTo(null);
+    this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+  }
 
-        this.setMinimumSize(new Dimension(340,140));
-        this.setResizable(false);
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    }
 
-    public String getNameFieldContent() {
-        return nameField.getText();
-    }
+  @Override
+  protected void processWindowEvent(WindowEvent e) {
+    if (e.getID() == WindowEvent.WINDOW_CLOSING) // WINDOW_CLOSING occurs when the user
+      this.dismissed = true;                     // presses the X button, but not when
+                                                 // setVisible(false) is called.
+    super.processWindowEvent(e);
+  }
 
-    public String getNinFieldContent() {
-        return ninField.getText();
-    }
 
-    public boolean isDismissed() {
-        return dismissed;
-    }
+  @Override
+  public void setVisible(boolean b) {
+    if (b)
+      this.dismissed = false;
 
-    @Override
-    protected void processWindowEvent(WindowEvent e) {
-        if (e.getID() == WindowEvent.WINDOW_CLOSING) // WINDOW_CLOSING occurs when the user
-            this.dismissed = true;                   // presses the X button, but not when
-                                                     // setVisible(false) is called.
-        super.processWindowEvent(e);
-    }
+    super.setVisible(b);
+  }
+
+  /**
+   * Set the confirm button's action.
+   * @param action the action, mustn't be null
+   */
+  public void setConfirmAction(ActionListener action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
+    this.confirmButtonAction = action;
+  }
+
+  /**
+   * Get the patient's name.
+   */
+  public String getSelectedName() {
+    return nameTextField.getText();
+  }
+
+  /**
+   * Get the patient's NIN.
+   */
+  public String getSelectedNin() {
+    return ninTextField.getText();
+  }
+
+  /**
+   * Whether the user closed the dialog without confirming.
+   */
+  public boolean getDismissed() {
+    return dismissed;
+  }
 }

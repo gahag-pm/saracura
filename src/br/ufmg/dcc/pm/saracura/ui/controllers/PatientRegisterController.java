@@ -1,16 +1,18 @@
 package br.ufmg.dcc.pm.saracura.ui.controllers;
 
+import java.awt.Window;
+
+import javax.swing.JOptionPane;
+
 import br.ufmg.dcc.pm.saracura.clinic.Clinic;
 import br.ufmg.dcc.pm.saracura.clinic.Patient;
 import br.ufmg.dcc.pm.saracura.ui.views.PatientRegisterDialog;
 
-import javax.swing.*;
-import java.awt.*;
-
 
 public class PatientRegisterController implements Controller<Void> {
-
   protected Clinic clinic;
+
+
 
   public PatientRegisterController(Clinic clinic) {
     if (clinic == null) {
@@ -19,38 +21,43 @@ public class PatientRegisterController implements Controller<Void> {
     this.clinic = clinic;
   }
 
+
+
   public Void execute(Window parent) {
-
-    String patientName;
-    String nin;
-
-    var patientRegisterDialog = new PatientRegisterDialog(parent);
-    patientRegisterDialog.setVisible(true);
-
-    if(!patientRegisterDialog.isDismissed()){
-      if(patientRegisterDialog.getNameFieldContent().equals("")){
-        JOptionPane.showMessageDialog(parent,
-                "Insira um nome válido!",
-                "NOME INVÁLIDO",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else {
-        patientName = patientRegisterDialog.getNameFieldContent();
+    var dialog = new PatientRegisterDialog(parent);
+    dialog.setConfirmAction(e -> {
+      if(dialog.getSelectedName().isEmpty()){
+        JOptionPane.showMessageDialog(
+          parent,
+          "Insira um nome válido!",
+          "NOME INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
       }
 
-      if(patientRegisterDialog.getNinFieldContent().equals("")){
-        JOptionPane.showMessageDialog(parent,
-                "Insira um CPF válido!",
-                "CPF INVÁLIDO",
-                JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else {
-        nin = patientRegisterDialog.getNinFieldContent();
+      if(dialog.getSelectedNin().isEmpty()){
+        JOptionPane.showMessageDialog(
+          parent,
+          "Insira um CPF válido!",
+          "CPF INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
       }
 
-      clinic.addPatient(new Patient(nin, patientName));
-    }
-    patientRegisterDialog.dispose();
+
+      dialog.setVisible(false);
+    });
+    dialog.setVisible(true);
+
+
+    if (dialog.getDismissed())
+      return null;
+
+
+    clinic.addPatient(new Patient(dialog.getSelectedNin(), dialog.getSelectedName()));
+
 
     return null;
   }
