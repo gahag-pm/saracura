@@ -57,9 +57,9 @@ public class Agenda<
    * Create an agenda object for the given operator.
    * @param operator            the associated operator, mustn't be null
    * @param appointmentDuration the duration of each appointment in the agenda,
-   *                            mustn't be null
+   *                            mustn't be null nor zero
    * @param startTime           the beginning of the work day, mustn't be null
-   * @param dayDuration         the duration of the work day, mustn't be null
+   * @param dayDuration         the duration of the work day, mustn't be null nor zero
    * @param workDays            the days of work in the week, mustn't be null
    */
   public Agenda(
@@ -91,6 +91,12 @@ public class Agenda<
       throw new IllegalArgumentException(
         "the workday period (startTime + dayDuration) exceeds the day"
       );
+
+    if (dayDuration == Duration.ZERO)
+      throw new IllegalArgumentException("dayDuration must'nt be zero");
+
+    if (appointmentDuration == Duration.ZERO)
+      throw new IllegalArgumentException("appointmentDuration must'nt be zero");
 
 
     this.operator = operator;

@@ -1,12 +1,14 @@
 package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import java.awt.Window;
+import java.time.Duration;
 
 import javax.swing.JOptionPane;
 
 import br.ufmg.dcc.pm.saracura.clinic.Clinic;
 import br.ufmg.dcc.pm.saracura.clinic.Doctor;
 import br.ufmg.dcc.pm.saracura.ui.views.DoctorRegisterDialog;
+import br.ufmg.dcc.pm.saracura.util.time.LocalTimeUtil;
 
 
 public class DoctorRegisterController implements Controller<Void> {
@@ -26,21 +28,25 @@ public class DoctorRegisterController implements Controller<Void> {
   public Void execute(Window parent) {
     var dialog = new DoctorRegisterDialog(parent);
     dialog.setConfirmAction(e -> {
-      if (dialog.getSelectedCrm().isEmpty()) {
-        JOptionPane.showMessageDialog(
-          parent,
-          "Insira um CRM válido!",
-          "CRM INVÁLIDO",
-          JOptionPane.WARNING_MESSAGE
-        );
-        return;
-      }
+      var startTime = dialog.getSelectedStartTime();
+      var dayDuration = dialog.getSelectedDayDuration();
+      var appointmentDuration = dialog.getSelectedAppointmentDuration();
 
       if (dialog.getSelectedName().isEmpty()) {
         JOptionPane.showMessageDialog(
           parent,
           "Insira um nome válido!",
           "NOME INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
+      }
+
+      if (dialog.getSelectedCrm().isEmpty()) {
+        JOptionPane.showMessageDialog(
+          parent,
+          "Insira um CRM válido!",
+          "CRM INVÁLIDO",
           JOptionPane.WARNING_MESSAGE
         );
         return;
@@ -66,7 +72,7 @@ public class DoctorRegisterController implements Controller<Void> {
         return;
       }
 
-      if (dialog.getSelectedStartTime() == null) {
+      if (startTime == null) {
         JOptionPane.showMessageDialog(
           parent,
           "Horário de início de expediente inválido!",
@@ -76,7 +82,7 @@ public class DoctorRegisterController implements Controller<Void> {
         return;
       }
 
-      if (dialog.getSelectedDayDuration() == null) {
+      if (dayDuration == null || dayDuration == Duration.ZERO) {
         JOptionPane.showMessageDialog(
           parent,
           "Duração de expediente inválida!",
@@ -86,7 +92,7 @@ public class DoctorRegisterController implements Controller<Void> {
         return;
       }
 
-      if (dialog.getSelectedAppointmentDuration() == null) {
+      if (appointmentDuration == null || appointmentDuration == Duration.ZERO) {
         JOptionPane.showMessageDialog(
           parent,
           "Duração de consulta inválida!",
@@ -95,6 +101,27 @@ public class DoctorRegisterController implements Controller<Void> {
         );
         return;
       }
+
+      if (LocalTimeUtil.checkOverflow(startTime, dayDuration)) {
+        JOptionPane.showMessageDialog(
+          parent,
+          "O dia de trabalho não pode extrapolar 23:59!",
+          "EXPEDIENTE INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
+      }
+
+      if (appointmentDuration.compareTo(dayDuration) > 0) {
+        JOptionPane.showMessageDialog(
+          parent,
+          "Duração de consulta não pode extrapolar o expediente!",
+          "DURAÇÃO CONSULTA INVÁLIDO",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
+      }
+
 
       dialog.setVisible(false);
     });
