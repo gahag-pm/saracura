@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,6 +12,8 @@ import java.util.HashSet;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
+
+import br.ufmg.dcc.pm.saracura.util.time.LocalTimeUtil;
 
 
 /**
@@ -86,10 +87,10 @@ public class Agenda<
     if (appointmentDuration.compareTo(dayDuration) > 0)
       throw new IllegalArgumentException("appointmentDuration bigger than dayDuration");
 
-    final long startMinutes = ChronoUnit.MINUTES.between(LocalTime.MIN, startTime);
-    final long maxMinutes = LocalTime.MAX.get(ChronoField.MINUTE_OF_DAY);
-    if (startMinutes + dayDuration.toSeconds() < maxMinutes)
-      throw new IllegalArgumentException("TIME DURATION EXCEPTION");
+    if (LocalTimeUtil.checkOverflow(startTime, dayDuration))
+      throw new IllegalArgumentException(
+        "the workday period (startTime + dayDuration) exceeds the day"
+      );
 
 
     this.operator = operator;

@@ -1,189 +1,260 @@
 package br.ufmg.dcc.pm.saracura.ui.views;
 
-import br.ufmg.dcc.pm.saracura.clinic.Specialty;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Window;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.time.DateTimeException;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
+
 import com.github.lgooddatepicker.zinternaltools.JIntegerTextField;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.WindowEvent;
+import br.ufmg.dcc.pm.saracura.clinic.Specialty;
 
 
 public class DoctorRegisterDialog extends JDialog {
-    protected int panelWidth = 370;
-    protected int panelHeight = 640;
-    protected boolean dismissed = false;
+  /**
+   * The specialties listed - listing string : Specialty
+   */
+  protected static final Map<String, Specialty> specialties =
+    Specialty.textMap.entrySet().stream().collect(
+      Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey)
+    );
 
-    protected JTextField nameField;
-    protected JTextField crmField;
-
-    protected JIntegerTextField startTimeHours;
-    protected JIntegerTextField startTimeMinutes;
-
-    protected JIntegerTextField dayDurationHours;
-    protected JIntegerTextField dayDurationMinutes;
-
-    protected JIntegerTextField appointmentDurationHours;
-    protected JIntegerTextField appointmentDurationMinutes;
-
-    protected final JList<String> specialties;
-    protected final JList<String> workDays;
-
-    protected final Dimension dButton = new Dimension(250, 75);
-    protected final JButton confirmButton = new JButton("Confirmar") {{
-        setSize(dButton);
-        setMaximumSize(dButton);
-        setAlignmentX(Component.CENTER_ALIGNMENT);
-    }};
-
-    protected final JButton cancelButton = new JButton("Cancelar") {{
-        setSize(dButton);
-        setMaximumSize(dButton);
-        setAlignmentX(Component.CENTER_ALIGNMENT);
-    }};
-
-    public DoctorRegisterDialog(Window parent) {
-        super(parent, "Novo Médico", ModalityType.APPLICATION_MODAL);
-
-        var panel = new JPanel(new FlowLayout());
-
-        nameField = new JTextField(20);
-        crmField = new JTextField(20);
-
-        startTimeHours = new JIntegerTextField(3);
-        startTimeMinutes = new JIntegerTextField(3);
-
-        dayDurationHours = new JIntegerTextField(3);
-        dayDurationMinutes = new JIntegerTextField(3);
-
-        appointmentDurationHours = new JIntegerTextField(3);
-        appointmentDurationMinutes = new JIntegerTextField(3);
-
-        specialties = new JList<String>() {{
-            setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        }};
-
-        workDays = new JList<String>() {{
-            setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        }};
-
-        int i = 0;
-        String[] items = new String[Specialty.values().length];
-
-        for (Specialty specialty : Specialty.values()) {
-            items[i] = Specialty.textMap.get(specialty);
-            i++;
-        }
-        specialties.setListData(items);
-        specialties.setSelectedIndex(0);
-
-        String[] days = new String[]{"Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira",
-                "Quinta-feira", "Sexta-feira", "Sabado"};
-        workDays.setListData(days);
-        workDays.setSelectedIndex(0);
+  /**
+   * The work days listed - listing string : DayOfWeek
+   */
+  protected static final Map<String, DayOfWeek> workDays = Map.of(
+    "Domingo"      , DayOfWeek.SUNDAY,
+    "Segunda-feira", DayOfWeek.MONDAY,
+    "Terça-feira"  , DayOfWeek.TUESDAY,
+    "Quarta-feira" , DayOfWeek.WEDNESDAY,
+    "Quinta-feira" , DayOfWeek.THURSDAY,
+    "Sexta-feira"  , DayOfWeek.FRIDAY,
+    "Sabado"       , DayOfWeek.SATURDAY
+  );
 
 
-        this.cancelButton.addActionListener(e -> {
-            this.dismissed = true;
-            this.dispose();
-        });
+  protected boolean dismissed = false;
 
-        this.confirmButton.addActionListener(e -> {
-            this.dispose();
-        });
-        panel.setBorder(new EmptyBorder(10, 20, 15, 20));
-        panel.add(new JLabel("Nome: "));
-        panel.add(nameField);
-        panel.add(new JLabel("   CRM: "));
-        panel.add(crmField);
-        panel.add(Box.createRigidArea(new Dimension(panelWidth, 5)));
-        panel.add(new JLabel("Escolha as especialidades do médico:"));
-        panel.add(new JLabel("(Segure a tecla CTRL para selecionar mais de uma)"));
-        panel.add(Box.createRigidArea(new Dimension(panelWidth, 5)));
-        panel.add(new JScrollPane(specialties));
-        panel.add(Box.createRigidArea(new Dimension(panelWidth, 5)));
-        panel.add(new JLabel("Escolha os dias de trabalho do médico:"));
-        panel.add(new JLabel("(Segure a tecla CTRL para selecionar mais de um)"));
-        panel.add(Box.createRigidArea(new Dimension(panelWidth, 5)));
-        panel.add(new JScrollPane(workDays));
-        panel.add(Box.createRigidArea(new Dimension(panelWidth, 3)));
-        panel.add(new JLabel("Início do expediente:"));
-        panel.add(startTimeHours);
-        panel.add(new JLabel(":"));
-        panel.add(startTimeMinutes);
-        panel.add(Box.createRigidArea(new Dimension(panelWidth, 3)));
-        panel.add(new JLabel("Duração do expediente:"));
-        panel.add(dayDurationHours);
-        panel.add(new JLabel("h"));
-        panel.add(dayDurationMinutes);
-        panel.add(new JLabel("m"));
-        panel.add(Box.createRigidArea(new Dimension(panelWidth, 3)));
-        panel.add(new JLabel("Duração das consultas:"));
-        panel.add(appointmentDurationHours);
-        panel.add(new JLabel("h"));
-        panel.add(appointmentDurationMinutes);
-        panel.add(new JLabel("m"));
-        panel.add(Box.createRigidArea(new Dimension(panelWidth, 3)));
-        panel.add(confirmButton);
-        panel.add(cancelButton);
+  protected final int panelWidth = 370;
+  protected final int panelHeight = 640;
 
-        this.add(panel);
+  protected final JTextField nameField = new JTextField(20);
+  protected final JTextField crmField = new JTextField(20);
 
-        this.setMinimumSize(new Dimension(panelWidth,panelHeight));
-        this.setResizable(false);
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+  protected final JIntegerTextField startTimeHours = new JIntegerTextField(3);
+  protected final JIntegerTextField startTimeMinutes = new JIntegerTextField(3);
+
+  protected final JIntegerTextField dayDurationHours = new JIntegerTextField(3);
+  protected final JIntegerTextField dayDurationMinutes = new JIntegerTextField(3);
+
+  protected final JIntegerTextField appointmentDurationHours = new JIntegerTextField(3);
+  protected final JIntegerTextField appointmentDurationMinutes = new JIntegerTextField(3);
+
+  protected final JList<String> specialtiesList = new JList<String>() {{
+    setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+  }};
+  protected final JList<String> workDaysList = new JList<String>() {{
+    setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+  }};
+
+  protected final Dimension dButton = new Dimension(250, 75);
+
+  protected final JButton confirmButton = new JButton("Confirmar") {{
+    setSize(dButton);
+    setMaximumSize(dButton);
+    setAlignmentX(Component.CENTER_ALIGNMENT);
+  }};
+
+  protected ActionListener confirmButtonAction = e -> this.setVisible(false);
+
+
+
+  public DoctorRegisterDialog(Window parent) {
+    super(parent, "Novo Médico", ModalityType.APPLICATION_MODAL);
+
+
+    this.confirmButton.addActionListener(e -> this.confirmButtonAction.actionPerformed(e));
+
+    this.specialtiesList.setListData(specialties.keySet().stream().toArray(String[]::new));
+    this.specialtiesList.setSelectedIndex(0);
+
+    this.workDaysList.setListData(workDays.keySet().stream().toArray(String[]::new));
+    this.workDaysList.setSelectedIndex(0);
+
+    var panel = new JPanel(new FlowLayout());
+    panel.setBorder(new EmptyBorder(10, 20, 15, 20));
+    panel.add(new JLabel("Nome: "));
+    panel.add(nameField);
+    panel.add(new JLabel("   CRM: "));
+    panel.add(crmField);
+    panel.add(Box.createRigidArea(new Dimension(panelWidth, 5)));
+    panel.add(new JLabel("Escolha as especialidades do médico:"));
+    panel.add(new JLabel("(Segure a tecla CTRL para selecionar mais de uma)"));
+    panel.add(Box.createRigidArea(new Dimension(panelWidth, 5)));
+    panel.add(new JScrollPane(specialtiesList));
+    panel.add(Box.createRigidArea(new Dimension(panelWidth, 5)));
+    panel.add(new JLabel("Escolha os dias de trabalho do médico:"));
+    panel.add(new JLabel("(Segure a tecla CTRL para selecionar mais de um)"));
+    panel.add(Box.createRigidArea(new Dimension(panelWidth, 5)));
+    panel.add(new JScrollPane(workDaysList));
+    panel.add(Box.createRigidArea(new Dimension(panelWidth, 3)));
+    panel.add(new JLabel("Início do expediente:"));
+    panel.add(startTimeHours);
+    panel.add(new JLabel(":"));
+    panel.add(startTimeMinutes);
+    panel.add(Box.createRigidArea(new Dimension(panelWidth, 3)));
+    panel.add(new JLabel("Duração do expediente:"));
+    panel.add(dayDurationHours);
+    panel.add(new JLabel("h"));
+    panel.add(dayDurationMinutes);
+    panel.add(new JLabel("m"));
+    panel.add(Box.createRigidArea(new Dimension(panelWidth, 3)));
+    panel.add(new JLabel("Duração das consultas:"));
+    panel.add(appointmentDurationHours);
+    panel.add(new JLabel("h"));
+    panel.add(appointmentDurationMinutes);
+    panel.add(new JLabel("m"));
+    panel.add(Box.createRigidArea(new Dimension(panelWidth, 3)));
+    panel.add(confirmButton);
+    this.add(panel);
+
+
+    this.setMinimumSize(new Dimension(panelWidth,panelHeight));
+    this.setResizable(false);
+    this.setLocationRelativeTo(null);
+    this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+  }
+
+
+
+  @Override
+  protected void processWindowEvent(WindowEvent e) {
+    if (e.getID() == WindowEvent.WINDOW_CLOSING) // WINDOW_CLOSING occurs when the user
+      this.dismissed = true;                     // presses the X button, but not when
+                                                 // setVisible(false) is called.
+    super.processWindowEvent(e);
+  }
+
+
+  @Override
+  public void setVisible(boolean b) {
+    if (b)
+      this.dismissed = false;
+
+    super.setVisible(b);
+  }
+
+  /**
+   * Set the confirm button's action.
+   * @param action the action, mustn't be null
+   */
+  public void setConfirmAction(ActionListener action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
+    this.confirmButtonAction = action;
+  }
+
+  /**
+   * Get the doctor's name.
+   */
+  public String getSelectedName() {
+    return nameField.getText();
+  }
+
+  /**
+   * Get the doctor's CRM.
+   */
+  public String getSelectedCrm() {
+    return crmField.getText();
+  }
+
+  /**
+   * Get the selected specialties.
+   */
+  public Set<Specialty> getSelectedSpecialties() {
+    List<String> values = this.specialtiesList.getSelectedValuesList();
+    return values.stream().map(s -> specialties.get(s)).collect(Collectors.toSet());
+  }
+
+  /**
+   * Get the selected work days.
+   */
+  public Set<DayOfWeek> getSelectedWorkdays() {
+    List<String> values = this.workDaysList.getSelectedValuesList();
+    return values.stream().map(wd -> workDays.get(wd)).collect(Collectors.toSet());
+  }
+
+  /**
+   * Get the selected start time
+   * @return the selected time, or null if it is invalid
+   */
+  public LocalTime getSelectedStartTime() {
+    try {
+      return LocalTime.of(
+        this.startTimeHours.getValue(),
+        this.startTimeMinutes.getValue()
+      );
     }
-
-    public String getNameFieldContent() {
-        return nameField.getText();
+    catch (DateTimeException e) {
+      return null;
     }
+  }
 
-    public String getCrmFieldContent() {
-        return crmField.getText();
-    }
+  /**
+   * Get the selected day duration.
+   * @return the selected duration, or null if it is invalid
+   */
+  public Duration getSelectedDayDuration() {
+    int hours = this.dayDurationHours.getValue();
+    int minutes = this.dayDurationMinutes.getValue();
 
-    public boolean isDismissed() {
-        return dismissed;
-    }
+    if (hours > 23 || hours < 0 || minutes > 59 || minutes < 0)
+      return null;
 
-    public java.util.List<String> getSelectedSpecialties() {
-        return this.specialties.getSelectedValuesList();
-    }
+    return Duration.ofHours(hours).plus(Duration.ofMinutes(minutes));
+  }
 
-    public java.util.List<String> getSelectedWorkdays() {
-        return this.workDays.getSelectedValuesList();
-    }
+  /**
+   * Get the selected appointment duration.
+   * @return the selected duration, or null if it is invalid
+   */
+  public Duration getSelectedAppointmentDuration() {
+    int hours = this.appointmentDurationHours.getValue();
+    int minutes = this.appointmentDurationMinutes.getValue();
 
-    public int getStartTimeHours() {
-        return this.startTimeHours.getValue();
-    }
+    if (hours > 23 || hours < 0 || minutes > 59 || minutes < 0)
+      return null;
 
-    public int getStartTimeMinutes() {
-        return this.startTimeMinutes.getValue();
-    }
+    return Duration.ofHours(hours).plus(Duration.ofMinutes(minutes));
+  }
 
-    public int getDayDurationHours() {
-        return this.dayDurationHours.getValue();
-    }
-
-    public int getDayDurationMinutes() {
-        return this.dayDurationMinutes.getValue();
-    }
-
-    public int getAppointmentDurationHours() {
-        return this.appointmentDurationHours.getValue();
-    }
-
-    public int getAppointmentDurationMinutes() {
-        return this.appointmentDurationMinutes.getValue();
-    }
-
-    @Override
-    protected void processWindowEvent(WindowEvent e) {
-        if (e.getID() == WindowEvent.WINDOW_CLOSING) // WINDOW_CLOSING occurs when the user
-            this.dismissed = true;                   // presses the X button, but not when
-        // setVisible(false) is called.
-        super.processWindowEvent(e);
-    }
+  /**
+   * Whether the user closed the dialog without confirming.
+   */
+  public boolean getDismissed() {
+    return dismissed;
+  }
 }
