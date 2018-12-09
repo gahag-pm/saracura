@@ -68,7 +68,7 @@ public class PaymentController implements Controller<Invoice> {
       if (!checkDialog.getDismissed())
         return cancel.get();
 
-      return new Check(this.patient.name).pay(
+      return new Check(this.patient.name, checkDialog.getSelectedDate()).pay(
         this.clinic,
         checkDialog.getSelectedValue()
       );

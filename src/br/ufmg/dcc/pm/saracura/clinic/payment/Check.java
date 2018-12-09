@@ -12,18 +12,27 @@ public class Check implements Payment {
    */
   public final String payer;
 
+  /**
+   * The payement's due date.
+   */
+  public final LocalDate date;
+
 
 
   /**
    * Create a check payment.
    * @param payer the payer's name, mustn't be null
+   * @param date the payment's due date, mustn't be null
    */
-  public Check(String payer) {
+  public Check(String payer, LocalDate date) {
     if (payer == null)
       throw new IllegalArgumentException("payer mustn't be null");
+    if (date == null)
+      throw new IllegalArgumentException("date mustn't be null");
 
 
     this.payer = payer;
+    this.date = date;
   }
 
 
@@ -38,7 +47,7 @@ public class Check implements Payment {
       this.payer,
       clinic.getName(),
       clinic.getNRLE(),
-      LocalDate.now(),
+      this.date,
       value
     );
   }
