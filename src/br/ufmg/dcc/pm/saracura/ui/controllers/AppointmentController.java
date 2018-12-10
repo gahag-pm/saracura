@@ -239,6 +239,9 @@ public class AppointmentController implements Controller<Void> {
       return null;
 
 
+    // TODO: payment.
+
+
     doctor.getAgenda().scheduleAppointment(dateTime, patient, "consulta");
 
     return null;
