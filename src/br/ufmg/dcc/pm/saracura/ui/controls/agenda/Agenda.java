@@ -41,7 +41,7 @@ public abstract class Agenda extends JComponent {
   protected static final int TIME_COL_WIDTH = 100;
   
   protected List<DayOfWeek> week;
-  protected List<AgendaEvent> events;
+  protected Iterable<AgendaEvent> events;
   protected double timeScale;
   protected double dayWidth;
   protected Graphics2D g2;
@@ -49,8 +49,6 @@ public abstract class Agenda extends JComponent {
   protected LocalTime startTime;
   protected int workHours;
 
-  protected abstract DayOfWeek getStartDay();
-  protected abstract DayOfWeek getEndDay();
   protected abstract boolean dateInRange(LocalDate date);
   protected abstract LocalDate getDateFromDay(DayOfWeek day);
   protected abstract int numDaysToShow();
@@ -64,7 +62,7 @@ public abstract class Agenda extends JComponent {
 
    }
   
-  protected Agenda(List<DayOfWeek> week, List<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
+  protected Agenda(List<DayOfWeek> week, Iterable<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
     if (week == null)
       throw new IllegalArgumentException("week mustn't be null");
 
@@ -142,8 +140,8 @@ public abstract class Agenda extends JComponent {
   }
   
   private boolean checkUnscheduledAgendaClick(Point p) {
-      final double x0 = dayToPixel(getStartDay());
-      final double x1 = dayToPixel(getEndDay()) + dayWidth;
+      final double x0 = dayToPixel(this.week.get(0));
+      final double x1 = dayToPixel(this.week.get(this.week.size() - 1)) + dayWidth;
       final double y0 = timeToPixel(START_TIME);
       final double y1 = timeToPixel(END_TIME);
 
@@ -223,16 +221,12 @@ public abstract class Agenda extends JComponent {
   }
   
   private DayOfWeek pixelToDay(double x) {
-      double pixel;
-      DayOfWeek day;
-      for (int i = getStartDay().getValue(); i <= getEndDay().getValue(); i++) {
-          day = DayOfWeek.of(i);
-          pixel = dayToPixel(day);
-          if (x >= pixel && x < pixel + dayWidth) {
-              return day;
-          }
-      }
-      return null;
+    for (DayOfWeek day : this.week) {
+      var pixel = dayToPixel(day);
+      if (x >= pixel && x < pixel + dayWidth)
+        return day;
+    }
+    return null;
   }
   
   private void drawDayHeadings() {
@@ -429,21 +423,5 @@ public abstract class Agenda extends JComponent {
   public void goToToday() {
     setRangeToToday();
     repaint();
-  }
-
-  public void setEvents(ArrayList<AgendaEvent> events) {
-    this.events = events;
-    repaint();
-  }
-
-  public void addEvent(AgendaEvent event) {
-    events.add(event);
-    repaint();
-  }
-
-  public boolean removeEvent(AgendaEvent event) {
-    boolean removed = events.remove(event);
-    repaint();
-    return removed;
   }
 }

@@ -212,6 +212,15 @@ public class Agenda<
 
 
   /**
+   * Get a read-only view of the appointments.
+   * @param begin the beginning date of the interval
+   * @param end the end date of the interval
+   */
+  public NavigableSet<Appointment<Operator, Cooperator>> view() {
+    return Collections.unmodifiableNavigableSet(this.agenda);
+  }
+
+  /**
    * Get a read-only view of the appointments in the given time interval.
    * @param begin the beginning date of the interval
    * @param end the end date of the interval
@@ -220,6 +229,10 @@ public class Agenda<
     LocalDate begin,
     LocalDate end
   ) {
+    if (!begin.isBefore(end))
+      throw new IllegalArgumentException("begin date must preceed end date");
+
+
     var _begin = Appointment.<Operator, Cooperator>mock(begin.atStartOfDay());
     var _end = Appointment.<Operator, Cooperator>mock(end.plusDays(1).atStartOfDay());
 

@@ -4,9 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -14,14 +12,11 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import br.ufmg.dcc.pm.saracura.ui.controls.agenda.Agenda;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.DayAgenda;
 
 
 public class DailyAgendaDialog extends JDialog {
-  protected List<AgendaEvent> events;
-
   protected DayAgenda dayAgenda;
   protected JButton goToTodayBtn;
   protected JButton nextDayBtn;
@@ -30,12 +25,17 @@ public class DailyAgendaDialog extends JDialog {
 
 
 
-  public DailyAgendaDialog(Window parent, String owner, List<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
+  public DailyAgendaDialog(
+    Window parent,
+    String owner,
+    Iterable<AgendaEvent> events,
+    Set<DayOfWeek> workDays,
+    LocalTime startTime,
+    int workHours
+  ) {
     super(parent, "Agenda diária de " + owner, ModalityType.APPLICATION_MODAL);
 
-    this.events = events;
-
-    this.dayAgenda = new DayAgenda(this.events, workDays, startTime,workHours);
+    this.dayAgenda = new DayAgenda(events, workDays, startTime,workHours);
     this.weekControls = new JPanel(new FlowLayout());
     
     this.dayAgenda.addAgendaScheduledEventListener(e -> System.out.println(e.getAgendaEvent()));
@@ -63,11 +63,5 @@ public class DailyAgendaDialog extends JDialog {
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-  }
-
-
-
-  public void addEvent(LocalDate date, LocalTime startTime, LocalTime endTime, String client) {
-    this.events.add(new AgendaEvent(date, startTime, endTime, client));
   }
 }

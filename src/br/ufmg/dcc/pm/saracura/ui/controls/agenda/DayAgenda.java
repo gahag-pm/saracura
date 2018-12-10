@@ -11,7 +11,7 @@ public class DayAgenda extends Agenda {
   private LocalDate date;
 
 
-  public DayAgenda(List<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
+  public DayAgenda(Iterable<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
     super(List.of(LocalDate.now().getDayOfWeek()), events, workDays, startTime, workHours);
     this.date = LocalDate.now();
   }
@@ -50,15 +50,5 @@ public class DayAgenda extends Agenda {
   public void prevDay() {
     this.date = this.date.minusDays(1);
     repaint();
-  }
-
-  @Override
-  protected DayOfWeek getStartDay() {
-    return this.date.getDayOfWeek();
-  }
-
-  @Override
-  protected DayOfWeek getEndDay() {
-    return this.date.getDayOfWeek();
   }
 }

@@ -2,6 +2,7 @@ package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import java.awt.Window;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -12,7 +13,9 @@ import br.ufmg.dcc.pm.saracura.clinic.Clinic;
 import br.ufmg.dcc.pm.saracura.clinic.Doctor;
 import br.ufmg.dcc.pm.saracura.clinic.Patient;
 import br.ufmg.dcc.pm.saracura.clinic.Specialty;
+import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
 import br.ufmg.dcc.pm.saracura.ui.views.ListPickDialog;
+import br.ufmg.dcc.pm.saracura.ui.views.WeeklyAgendaDialog;
 
 
 public class AppointmentController implements Controller<Void> {
@@ -177,16 +180,52 @@ public class AppointmentController implements Controller<Void> {
     return doctorDialog.getSelected();
   }
 
+  public LocalDateTime selectDateTime(Window parent, Doctor doctor) {
+    final var agenda = doctor.getAgenda();
+
+    final var agendaDialog = new WeeklyAgendaDialog(
+      parent,
+      doctor.name,
+      agenda.view().stream().map(
+        a -> new AgendaEvent(
+          a.time.toLocalDate(),
+          a.time.toLocalTime(),
+          a.time.toLocalTime().plus(agenda.appointmentDuration),
+          "consulta"
+        )
+      ).collect(Collectors.toUnmodifiableList()),
+      agenda.workDays,
+      agenda.startTime,
+      agenda.dayDuration.toHoursPart()
+    );
+    agendaDialog.setVisible(true);
+
+    LocalDateTime selectedDateTime = null; // TODO: get from agendaDialog.
+
+    if (selectedDateTime == null) // User canceled.
+      return null;
+
+    final var date = selectedDateTime.toLocalDate();
+    final var time = selectedDateTime.toLocalTime();
+    final var appointmentMinutes = agenda.appointmentDuration.toMinutes();
+    final var timeMinutes = ChronoUnit.MINUTES.between(agenda.startTime, time);
+    final var normalizedMinutes = (timeMinutes / appointmentMinutes) * appointmentMinutes;
+
+    return LocalDateTime.of(date, agenda.startTime.plusMinutes(normalizedMinutes));
+  }
+
   public Void execute(Window parent) {
     final var patient = this.selectPatient(parent);
 
     if (patient == null) // User canceled.
       return null;
 
+
     final var specialty = this.selectSpecialty(parent);
 
     if (specialty == null) // User canceled.
       return null;
+
 
     final var doctor = this.selectDoctor(parent, specialty);
 
@@ -194,7 +233,13 @@ public class AppointmentController implements Controller<Void> {
       return null;
 
 
-    // TODO.
+    final var dateTime = this.selectDateTime(parent, doctor);
+
+    if (dateTime == null) // User canceled.
+      return null;
+
+
+    doctor.getAgenda().scheduleAppointment(dateTime, patient, "consulta");
 
     return null;
   }

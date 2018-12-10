@@ -15,7 +15,7 @@ public class WeekAgenda extends Agenda {
 
 
 
-  public WeekAgenda(List<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
+  public WeekAgenda(Iterable<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
     super(
       List.of(
         DayOfWeek.SUNDAY,
@@ -76,15 +76,5 @@ public class WeekAgenda extends Agenda {
   public void prevMonth() {
     this.date = LocalDateUtil.getStartOfWeek(this.date).minusWeeks(4);
     repaint();
-  }
-
-  @Override
-  protected DayOfWeek getStartDay() {
-    return this.date.getDayOfWeek();
-  }
-
-  @Override
-  protected DayOfWeek getEndDay() {
-    return this.date.getDayOfWeek();
   }
 }
