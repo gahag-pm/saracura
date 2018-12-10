@@ -51,6 +51,22 @@ public class AgendaController implements Controller<LocalDateTime> {
     );
 
     agendaDialog.setSlotClicked(dt -> {
+      final var time = dt.toLocalTime();
+
+      if ( // Check if dateTime is within the working hours:
+        ! agenda.workDays.contains(dt.getDayOfWeek())
+        || agenda.startTime.isAfter(time)
+        || agenda.startTime.plus(agenda.dayDuration).isBefore(time)
+      ) {
+        JOptionPane.showMessageDialog(
+          agendaDialog,
+          "Escolha um horário dentro do expediente!",
+          "Atenção",
+          JOptionPane.WARNING_MESSAGE
+        );
+        return;
+      }
+
       agendaDialog.setVisible(false);
     });
 
