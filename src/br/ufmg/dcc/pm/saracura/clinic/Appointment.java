@@ -1,6 +1,7 @@
 package br.ufmg.dcc.pm.saracura.clinic;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 /**
@@ -83,6 +84,7 @@ public class Appointment<Operator, Cooperator> {
   }
 
 
+
   /**
    * Create an mocked appointment object.
    * @param time the time of the appointment, mustn't be null
@@ -91,5 +93,30 @@ public class Appointment<Operator, Cooperator> {
     LocalDateTime time
   ) {
     return new Appointment<Operator, Cooperator>(time);
+  }
+
+
+
+  public boolean equals(Object o) {
+    if (o == null || !(o instanceof Agenda))
+      return false;
+
+    final var obj = (Appointment<?, ?>) o;
+
+    return this.operator.equals(obj.operator)
+        && this.cooperator.equals(obj.cooperator)
+        && this.patient.equals(obj.patient)
+        && this.time.equals(obj.time)
+        && this.description.equals(obj.description);
+  }
+
+  public int hashCode() {
+    return Objects.hash(
+      this.operator,
+      this.cooperator,
+      this.patient,
+      this.time,
+      this.description
+    );
   }
 }
