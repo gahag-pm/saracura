@@ -200,7 +200,7 @@ public class AppointmentController implements Controller<Void> {
     );
     agendaDialog.setVisible(true);
 
-    LocalDateTime selectedDateTime = null; // TODO: get from agendaDialog.
+    LocalDateTime selectedDateTime = agendaDialog.getSelectedDateTime();
 
     if (selectedDateTime == null) // User canceled.
       return null;

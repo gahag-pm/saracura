@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
+import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaUnscheduledClickEvent;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.WeekAgenda;
 
 
@@ -24,6 +26,7 @@ public class WeeklyAgendaDialog extends JDialog {
   private JButton nextMonthBtn;
   private JButton prevMonthBtn;
   private JPanel weekControls;
+  private LocalDateTime selectedDateTime;
 
 
 
@@ -46,8 +49,11 @@ public class WeeklyAgendaDialog extends JDialog {
     this.weekControls = new JPanel(new FlowLayout());
     
     this.weekAgenda.addAgendaScheduledEventListener(e -> System.out.println(e.getAgendaEvent()));
-    this.weekAgenda.addAgendaUnscheduledEventListener(e -> System.out.println(e.getDateTime()));
-
+    this.weekAgenda.addAgendaUnscheduledEventListener(e -> {
+        System.out.println(e.getDateTime());
+        setSelectedDateTime(e);
+    });
+    
     this.goToTodayBtn = new JButton("Hoje") {{
       addActionListener(e -> weekAgenda.goToToday());
     }};
@@ -78,5 +84,11 @@ public class WeeklyAgendaDialog extends JDialog {
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+  }
+  private void setSelectedDateTime(AgendaUnscheduledClickEvent event) {
+      this.selectedDateTime = event.getDateTime();
+  }
+  public LocalDateTime getSelectedDateTime() {
+      return this.selectedDateTime;
   }
 }
