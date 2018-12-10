@@ -4,9 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.NavigableMap;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -14,81 +17,101 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
-import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaUnscheduledClickEvent;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.WeekAgenda;
 
 
 public class WeeklyAgendaDialog extends JDialog {
-  private WeekAgenda weekAgenda;
-  private JButton goToTodayBtn;
-  private JButton nextWeekBtn;
-  private JButton prevWeekBtn;
-  private JButton nextMonthBtn;
-  private JButton prevMonthBtn;
-  private JPanel weekControls;
-  private LocalDateTime selectedDateTime;
+  protected LocalDateTime selectedDateTime;
+  protected AgendaEvent selectedEvent;
+
+  protected Consumer<AgendaEvent> eventClicked = e -> { };
+  protected Consumer<LocalDateTime> slotClicked = dt -> { };
 
 
 
   public WeeklyAgendaDialog(
     Window parent,
     String owner,
-    Iterable<AgendaEvent> events,
+    NavigableMap<LocalDateTime, AgendaEvent> events,
     Set<DayOfWeek> workDays,
     LocalTime startTime,
-    int workHours
+    Duration dayDuration,
+    Duration appointmentDuration
   ) {
     super(parent, "Agenda semanal de " + owner, ModalityType.APPLICATION_MODAL);
 
 
-    if (events == null)
-      throw new IllegalArgumentException("events mustn't be null");
-
-
-    this.weekAgenda = new WeekAgenda(events, workDays, startTime, workHours);
-    this.weekControls = new JPanel(new FlowLayout());
-    
-    this.weekAgenda.addAgendaScheduledEventListener(e -> System.out.println(e.getAgendaEvent()));
-    this.weekAgenda.addAgendaUnscheduledEventListener(e -> {
-        System.out.println(e.getDateTime());
-        setSelectedDateTime(e);
+    var agenda = new WeekAgenda(
+      events,
+      workDays,
+      startTime,
+      dayDuration,
+      appointmentDuration
+    );
+    agenda.setSlotClicked(dt -> {
+      this.selectedDateTime = dt;
+      this.slotClicked.accept(dt);
     });
-    
-    this.goToTodayBtn = new JButton("Hoje") {{
-      addActionListener(e -> weekAgenda.goToToday());
+    agenda.setEventClicked(e -> {
+      this.selectedEvent = e;
+      this.eventClicked.accept(e);
+    });
+
+    var goToTodayBtn = new JButton("Hoje") {{
+      addActionListener(e -> agenda.goToToday());
     }};
-    this.nextWeekBtn = new JButton(">") {{
-      addActionListener(e -> weekAgenda.nextWeek());
+    var nextWeekBtn = new JButton(">") {{
+      addActionListener(e -> agenda.nextWeek());
     }};
-    this.prevWeekBtn = new JButton("<") {{
-      addActionListener(e -> weekAgenda.prevWeek());
+    var prevWeekBtn = new JButton("<") {{
+      addActionListener(e -> agenda.prevWeek());
     }};
-    this.nextMonthBtn = new JButton(">>") {{
-      addActionListener(e -> weekAgenda.nextMonth());
+    var nextMonthBtn = new JButton(">>") {{
+      addActionListener(e -> agenda.nextMonth());
     }};
-    this.prevMonthBtn = new JButton("<<") {{
-      addActionListener(e -> weekAgenda.prevMonth());
+    var prevMonthBtn = new JButton("<<") {{
+      addActionListener(e -> agenda.prevMonth());
     }};
 
 
-    this.weekControls.add(prevMonthBtn);
-    this.weekControls.add(prevWeekBtn);
-    this.weekControls.add(goToTodayBtn);
-    this.weekControls.add(nextWeekBtn);
-    this.weekControls.add(nextMonthBtn);
-
+    var weekControls = new JPanel(new FlowLayout());
+    weekControls.add(prevMonthBtn);
+    weekControls.add(prevWeekBtn);
+    weekControls.add(goToTodayBtn);
+    weekControls.add(nextWeekBtn);
+    weekControls.add(nextMonthBtn);
     this.add(weekControls, BorderLayout.NORTH);
-    this.add(weekAgenda, BorderLayout.CENTER);
+
+    this.add(agenda, BorderLayout.CENTER);
+
 
     this.setSize(1000, 900);
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
   }
-  private void setSelectedDateTime(AgendaUnscheduledClickEvent event) {
-      this.selectedDateTime = event.getDateTime();
+
+
+
+  public void setEventClicked(Consumer<AgendaEvent> eventClicked){
+    if (eventClicked == null)
+      throw new IllegalArgumentException("eventClicked mustn't be null");
+
+    this.eventClicked = eventClicked;
   }
+
+  public void setSlotClicked(Consumer<LocalDateTime> slotClicked){
+    if (slotClicked == null)
+      throw new IllegalArgumentException("slotClicked mustn't be null");
+
+    this.slotClicked = slotClicked;
+  }
+
   public LocalDateTime getSelectedDateTime() {
-      return this.selectedDateTime;
+    return this.selectedDateTime;
+  }
+
+  public AgendaEvent getSelectedEvent() {
+    return this.selectedEvent;
   }
 }

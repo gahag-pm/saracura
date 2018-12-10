@@ -1,9 +1,12 @@
 package br.ufmg.dcc.pm.saracura.ui.controls.agenda;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NavigableMap;
 import java.util.Set;
 
 import br.ufmg.dcc.pm.saracura.util.time.LocalDateUtil;
@@ -15,7 +18,13 @@ public class WeekAgenda extends Agenda {
 
 
 
-  public WeekAgenda(Iterable<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
+  public WeekAgenda(
+    NavigableMap<LocalDateTime, AgendaEvent> events,
+    Set<DayOfWeek> workDays,
+    LocalTime startTime,
+    Duration dayDuration,
+    Duration appointmentDuration
+  ) {
     super(
       List.of(
         DayOfWeek.SUNDAY,
@@ -26,25 +35,31 @@ public class WeekAgenda extends Agenda {
         DayOfWeek.FRIDAY,
         DayOfWeek.SATURDAY
       ),
-      events, workDays, startTime, workHours
+      events,
+      workDays,
+      startTime,
+      dayDuration,
+      appointmentDuration
     );
 
     this.date = LocalDate.now();
   }
 
+
+
   @Override
-  protected boolean dateInRange(LocalDate date) {
-    var startOfWeek = LocalDateUtil.getStartOfWeek(date);
-    return LocalDateUtil.getStartOfWeek(this.date).equals(startOfWeek);
+  protected LocalDate startDate() {
+    return LocalDateUtil.getStartOfWeek(this.date);
+  }
+
+  @Override
+  protected LocalDate endDate() {
+    return LocalDateUtil.getEndOfWeek(this.date);
   }
 
   @Override
   protected LocalDate getDateFromDay(DayOfWeek day) {
     return LocalDateUtil.getDayOfWeek(this.date, day);
-  }
-
-  protected int numDaysToShow() {
-    return 7;
   }
 
   @Override

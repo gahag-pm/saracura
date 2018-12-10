@@ -2,16 +2,22 @@ package br.ufmg.dcc.pm.saracura.clinic;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.NavigableSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.Spliterator;
 import java.util.TreeSet;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import br.ufmg.dcc.pm.saracura.util.time.LocalTimeUtil;
 
@@ -24,7 +30,7 @@ import br.ufmg.dcc.pm.saracura.util.time.LocalTimeUtil;
 public class Agenda<
   Operator extends Schedulable<Operator, Cooperator>,
   Cooperator extends Schedulable<Cooperator, Operator>
-> {
+> implements NavigableSet<Appointment<Operator, Cooperator>> {
   /**
    * The set of scheduled appointments.
    */
@@ -60,7 +66,7 @@ public class Agenda<
    *                            mustn't be null nor zero
    * @param startTime           the beginning of the work day, mustn't be null
    * @param dayDuration         the duration of the work day, mustn't be null nor zero
-   * @param workDays            the days of work in the week, mustn't be null
+   * @param workDays            the days of work in the week, mustn't be null nor empty
    */
   public Agenda(
     Operator operator,
@@ -83,6 +89,9 @@ public class Agenda<
 
     if (workDays == null)
       throw new IllegalArgumentException("workDays mustn't be null");
+
+    if (workDays.isEmpty())
+      throw new IllegalArgumentException("workDays mustn't be empty");
 
     if (appointmentDuration.compareTo(dayDuration) > 0)
       throw new IllegalArgumentException("appointmentDuration bigger than dayDuration");
@@ -211,33 +220,203 @@ public class Agenda<
   }
 
 
-  /**
-   * Get a read-only view of the appointments.
-   * @param begin the beginning date of the interval
-   * @param end the end date of the interval
-   */
-  public NavigableSet<Appointment<Operator, Cooperator>> view() {
-    return Collections.unmodifiableNavigableSet(this.agenda);
+
+  // Interfaces --------------------------------------------------------------------------
+
+
+  // NavigableSet:
+  public Appointment<Operator, Cooperator> ceiling(Appointment<Operator, Cooperator> e) {
+    return this.agenda.ceiling(e);
   }
 
-  /**
-   * Get a read-only view of the appointments in the given time interval.
-   * @param begin the beginning date of the interval
-   * @param end the end date of the interval
-   */
-  public NavigableSet<Appointment<Operator, Cooperator>> frameView(
-    LocalDate begin,
-    LocalDate end
+  public Appointment<Operator, Cooperator> floor(Appointment<Operator, Cooperator> e) {
+    return this.agenda.floor(e);
+  }
+
+  public Appointment<Operator, Cooperator> higher(Appointment<Operator, Cooperator> e) {
+    return this.agenda.higher(e);
+  }
+
+  public Appointment<Operator, Cooperator> lower(Appointment<Operator, Cooperator> e) {
+    return this.agenda.lower(e);
+  }
+
+  public Appointment<Operator, Cooperator> pollFirst() {
+    return this.agenda.pollFirst();
+  }
+
+  public Appointment<Operator, Cooperator> pollLast() {
+    return this.agenda.pollLast();
+  }
+
+  public Iterator<Appointment<Operator, Cooperator>> descendingIterator() {
+    return Collections.unmodifiableNavigableSet(this.agenda).descendingIterator();
+  }
+
+  public NavigableSet<Appointment<Operator, Cooperator>> subSet(
+    Appointment<Operator, Cooperator> fromElement,
+    boolean fromInclusive,
+    Appointment<Operator, Cooperator> toElement,
+    boolean toInclusive
   ) {
-    if (!begin.isBefore(end))
-      throw new IllegalArgumentException("begin date must preceed end date");
-
-
-    var _begin = Appointment.<Operator, Cooperator>mock(begin.atStartOfDay());
-    var _end = Appointment.<Operator, Cooperator>mock(end.plusDays(1).atStartOfDay());
-
-    return Collections.unmodifiableNavigableSet(
-      this.agenda.subSet(_begin, true, _end, false)
+    return Collections.unmodifiableNavigableSet(this.agenda).subSet(
+      fromElement,
+      fromInclusive,
+      toElement,
+      toInclusive
     );
+  }
+
+  public NavigableSet<Appointment<Operator, Cooperator>> descendingSet() {
+    return Collections.unmodifiableNavigableSet(this.agenda).descendingSet();
+  }
+
+  public NavigableSet<Appointment<Operator, Cooperator>> headSet(
+    Appointment<Operator, Cooperator> toElement,
+    boolean inclusive
+  ) {
+    return Collections.unmodifiableNavigableSet(this.agenda).headSet(toElement, inclusive);
+  }
+
+  public NavigableSet<Appointment<Operator, Cooperator>> tailSet(
+    Appointment<Operator, Cooperator> fromElement,
+    boolean inclusive
+  ) {
+    return Collections.unmodifiableNavigableSet(this.agenda).tailSet(
+      fromElement,
+      inclusive
+    );
+  }
+
+
+  // SortedSet:
+  public Comparator<? super Appointment<Operator, Cooperator>> comparator() {
+    return this.agenda.comparator();
+  }
+
+  public Appointment<Operator, Cooperator> first() {
+    return this.agenda.first();
+  }
+
+  public Appointment<Operator, Cooperator> last() {
+    return this.agenda.last();
+  }
+
+  public SortedSet<Appointment<Operator, Cooperator>> subSet(
+    Appointment<Operator, Cooperator> fromElement,
+    Appointment<Operator, Cooperator> toElement
+  ) {
+    return Collections.unmodifiableSortedSet(this.agenda).subSet(fromElement, toElement);
+  }
+
+  public SortedSet<Appointment<Operator, Cooperator>> headSet(
+    Appointment<Operator, Cooperator> toElement
+  ) {
+    return Collections.unmodifiableSortedSet(this.agenda).headSet(toElement);
+  }
+
+  public SortedSet<Appointment<Operator, Cooperator>> tailSet(
+    Appointment<Operator, Cooperator> fromElement
+  ) {
+    return Collections.unmodifiableSortedSet(this.agenda).tailSet(fromElement);
+  }
+
+
+  // Collection:
+  public boolean add(Appointment<Operator, Cooperator> e) {
+    throw new UnsupportedOperationException();
+  }
+
+  public boolean addAll(Collection<? extends Appointment<Operator, Cooperator>> c) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void clear() {
+    throw new UnsupportedOperationException();
+  }
+
+  public boolean remove(Object o) {
+    throw new UnsupportedOperationException();
+  }
+
+  public boolean removeAll(Collection<?> c) {
+    throw new UnsupportedOperationException();
+  }
+
+  public boolean removeIf(
+    Predicate<? super Appointment<Operator, Cooperator>> filter
+  ) {
+    throw new UnsupportedOperationException();
+  }
+
+  public boolean retainAll(Collection<?> c) {
+    throw new UnsupportedOperationException();
+  }
+
+  public boolean contains(Object o) {
+    return this.agenda.contains(o);
+  }
+
+  public boolean containsAll(Collection<?> c) {
+    return this.agenda.containsAll(c);
+  }
+
+  public boolean equals(Object o) {
+    if (o == null || !(o instanceof Agenda))
+      return false;
+
+    final var obj = (Agenda<?, ?>) o;
+
+    return this.agenda.equals(obj.agenda)
+        && this.operator.equals(obj.operator)
+        && this.appointmentDuration.equals(obj.appointmentDuration)
+        && this.startTime.equals(obj.startTime)
+        && this.dayDuration.equals(obj.dayDuration)
+        && this.workDays.equals(obj.workDays);
+  }
+
+  public int hashCode() {
+    return Objects.hash(
+      this.agenda,
+      this.operator,
+      this.appointmentDuration,
+      this.startTime,
+      this.dayDuration,
+      this.workDays
+    );
+  }
+
+  public boolean isEmpty() {
+    return this.agenda.isEmpty();
+  }
+
+  public int size() {
+    return this.agenda.size();
+  }
+
+  public Stream<Appointment<Operator, Cooperator>> stream() {
+    return Collections.unmodifiableCollection(this.agenda).stream();
+  }
+
+  public Stream<Appointment<Operator, Cooperator>> parallelStream() {
+    return Collections.unmodifiableCollection(this.agenda).parallelStream();
+  }
+
+  public Object[] toArray() {
+    return this.agenda.toArray();
+  }
+
+  public <T> T[] toArray(T[] a) {
+    return this.agenda.toArray(a);
+  }
+
+
+  // Iterable:
+  public Iterator<Appointment<Operator, Cooperator>> iterator() {
+    return Collections.unmodifiableCollection(this.agenda).iterator();
+  }
+
+  public Spliterator<Appointment<Operator, Cooperator>> spliterator() {
+    return Collections.unmodifiableCollection(this.agenda).spliterator();
   }
 }

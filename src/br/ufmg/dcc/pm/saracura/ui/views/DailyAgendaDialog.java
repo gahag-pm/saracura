@@ -35,11 +35,12 @@ public class DailyAgendaDialog extends JDialog {
   ) {
     super(parent, "Agenda diária de " + owner, ModalityType.APPLICATION_MODAL);
 
-    this.dayAgenda = new DayAgenda(events, workDays, startTime,workHours);
+    // TODO:
+    this.dayAgenda = null; // new DayAgenda(events, workDays, startTime,workHours);
     this.weekControls = new JPanel(new FlowLayout());
     
-    this.dayAgenda.addAgendaScheduledEventListener(e -> System.out.println(e.getAgendaEvent()));
-    this.dayAgenda.addAgendaUnscheduledEventListener(e -> System.out.println(e.getDateTime()));
+    // this.dayAgenda.addAgendaScheduledEventListener(e -> System.out.println(e.getAgendaEvent()));
+    // this.dayAgenda.addAgendaUnscheduledEventListener(e -> System.out.println(e.getDateTime()));
     
     this.goToTodayBtn = new JButton("Hoje") {{
       addActionListener(e -> dayAgenda.goToToday());

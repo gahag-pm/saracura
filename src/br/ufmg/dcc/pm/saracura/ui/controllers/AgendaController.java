@@ -2,8 +2,11 @@ package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import java.awt.Window;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.swing.JOptionPane;
 
 import br.ufmg.dcc.pm.saracura.clinic.Doctor;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
@@ -31,31 +34,38 @@ public class AgendaController implements Controller<LocalDateTime> {
     final var agendaDialog = new WeeklyAgendaDialog(
       parent,
       this.doctor.name,
-      agenda.view().stream().map(
-        a -> new AgendaEvent(
-          a.time.toLocalDate(),
-          a.time.toLocalTime(),
-          a.time.toLocalTime().plus(agenda.appointmentDuration),
-          "consulta"
-        )
-      ).collect(Collectors.toUnmodifiableList()),
+      agenda.stream()
+            .map(a -> new AgendaEvent(a.time, "consulta - " + a.patient.name))
+            .collect(
+              Collectors.toMap(
+                e -> e.dateTime,
+                Function.identity(),
+                (v1,v2) ->{ throw new RuntimeException(); }, // This should never happen.
+                TreeMap::new
+              )
+            ),
       agenda.workDays,
       agenda.startTime,
-      agenda.dayDuration.toHoursPart()
+      agenda.dayDuration,
+      agenda.appointmentDuration
     );
+
+    agendaDialog.setSlotClicked(dt -> {
+      agendaDialog.setVisible(false);
+    });
+
+    agendaDialog.setEventClicked(e -> {
+      JOptionPane.showMessageDialog(
+        agendaDialog,
+        "Escolha um horário vago!",
+        "Atenção",
+        JOptionPane.WARNING_MESSAGE
+      );
+    });
+
     agendaDialog.setVisible(true);
 
-    LocalDateTime selectedDateTime = agendaDialog.getSelectedDateTime();
 
-    if (selectedDateTime == null) // User canceled.
-      return null;
-
-    final var date = selectedDateTime.toLocalDate();
-    final var time = selectedDateTime.toLocalTime();
-    final var appointmentMinutes = agenda.appointmentDuration.toMinutes();
-    final var timeMinutes = ChronoUnit.MINUTES.between(agenda.startTime, time);
-    final var normalizedMinutes = (timeMinutes / appointmentMinutes) * appointmentMinutes;
-
-    return LocalDateTime.of(date, agenda.startTime.plusMinutes(normalizedMinutes));
+    return agendaDialog.getSelectedDateTime();
   }
 }

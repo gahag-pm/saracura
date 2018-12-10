@@ -22,6 +22,13 @@ public class LocalDateUtil {
   }
 
   /**
+   * Gets the saturday date in the same week.
+   */
+  public static LocalDate getEndOfWeek(LocalDate date) {
+    return date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
+  }
+
+  /**
    * Gets the correspondent date in the same week.
    */
   public static LocalDate getDayOfWeek(LocalDate date, DayOfWeek dayOfWeek) {

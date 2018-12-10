@@ -13,23 +13,26 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.NavigableMap;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.swing.JComponent;
-import javax.swing.Timer;
-import javax.swing.event.EventListenerList;
+
+import br.ufmg.dcc.pm.saracura.util.time.LocalTimeUtil;
+
 
 public abstract class Agenda extends JComponent {
   // An estimate of the width of a single character 
-  private static final int FONT_LETTER_PIXEL_WIDTH = 7;
+  protected static final int FONT_LETTER_PIXEL_WIDTH = 7;
 
   protected static final LocalTime START_TIME = LocalTime.of(7, 0);
   protected static final LocalTime END_TIME = LocalTime.of(20, 0);
@@ -39,163 +42,129 @@ public abstract class Agenda extends JComponent {
 
   protected static final int HEADER_HEIGHT = 30;
   protected static final int TIME_COL_WIDTH = 100;
-  
-  protected List<DayOfWeek> week;
-  protected Iterable<AgendaEvent> events;
+
+
+  protected final List<DayOfWeek> week;
+  protected final NavigableMap<LocalDateTime, AgendaEvent> events;
+  protected final Set<DayOfWeek> workDays;
+  protected final LocalTime startTime;
+  protected final Duration dayDuration;
+  protected final Duration appointmentDuration;
+
   protected double timeScale;
   protected double dayWidth;
   protected Graphics2D g2;
-  protected Set<DayOfWeek> workDays;
-  protected LocalTime startTime;
-  protected int workHours;
 
-  protected abstract boolean dateInRange(LocalDate date);
+  protected abstract LocalDate startDate();
+  protected abstract LocalDate endDate();
   protected abstract LocalDate getDateFromDay(DayOfWeek day);
-  protected abstract int numDaysToShow();
   protected abstract double dayToPixel(DayOfWeek dayOfWeek);
   protected abstract void setRangeToToday();
-  
-  private EventListenerList listenerList = new EventListenerList();
 
-  public Agenda(List<DayOfWeek> week, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
-      this(week, new ArrayList<AgendaEvent>(), workDays, startTime, workHours);
+  protected Consumer<AgendaEvent> eventClicked = e -> { };
+  protected Consumer<LocalDateTime> slotClicked = dt -> { };
 
-   }
-  
-  protected Agenda(List<DayOfWeek> week, Iterable<AgendaEvent> events, Set<DayOfWeek> workDays, LocalTime startTime, int workHours) {
+
+
+  public Agenda(
+    List<DayOfWeek> week,
+    NavigableMap<LocalDateTime, AgendaEvent> events,
+    Set<DayOfWeek> workDays,
+    LocalTime startTime,
+    Duration dayDuration,
+    Duration appointmentDuration
+  ) {
     if (week == null)
       throw new IllegalArgumentException("week mustn't be null");
+
+    if (week.isEmpty())
+      throw new IllegalArgumentException("week mustn't be empty");
 
     if (events == null)
       throw new IllegalArgumentException("events mustn't be null");
 
-    if (week.isEmpty())
-      throw new IllegalArgumentException("week mustn't be empty");
-    
-    if(workDays == null)
-        throw new IllegalArgumentException("workdays mustn't be null");
-    
-    if(workDays.isEmpty())
-        throw new IllegalArgumentException("workdays mustn't be empty");
-    
-    if(startTime == null)
-        throw new IllegalArgumentException("startTime mustn't be null");
-    
-    if(workHours < 6 || workHours > 13)
-        throw new IllegalArgumentException("work hours must be between 6 and 13 inclusive");
+    if (workDays == null)
+      throw new IllegalArgumentException("workDays mustn't be null");
+
+    if (workDays.isEmpty())
+      throw new IllegalArgumentException("workDays mustn't be empty");
+
+    if (startTime == null)
+      throw new IllegalArgumentException("startTime mustn't be null");
+
+    if (dayDuration == null)
+      throw new IllegalArgumentException("dayDuration mustn't be null");
+
+    if (dayDuration == Duration.ZERO)
+      throw new IllegalArgumentException("dayDuration must'nt be zero");
+
+    if (LocalTimeUtil.checkOverflow(startTime, dayDuration))
+      throw new IllegalArgumentException(
+        "the workday period (startTime + dayDuration) exceeds the day"
+      );
+
+    if (appointmentDuration == null)
+      throw new IllegalArgumentException("appointmentDuration mustn't be null");
+
+    if (appointmentDuration.compareTo(dayDuration) > 0)
+      throw new IllegalArgumentException("appointmentDuration bigger than dayDuration");
+
+    if (appointmentDuration == Duration.ZERO)
+      throw new IllegalArgumentException("appointmentDuration must'nt be zero");
+
 
     this.week = week;
     this.events = events;
     this.workDays = workDays;
     this.startTime = startTime;
-    this.workHours = workHours;
+    this.dayDuration = dayDuration;
+    this.appointmentDuration = appointmentDuration;
     
-    setupEventListeners();
 
-    // Repaints every minute to update the current time line
-    Timer timer = new Timer(1000*60, e -> repaint());
-    timer.start();
-  }
-  
-  public static LocalTime roundTime(LocalTime time, int minutes) {
-      LocalTime t = time;
+    this.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        super.mouseClicked(e);
 
-      if (t.getMinute() % minutes > minutes / 2) {
-        t = t.plusMinutes(minutes - (t.getMinute() % minutes));
-      } else if (t.getMinute() % minutes < minutes / 2) {
-        t = t.minusMinutes(t.getMinute() % minutes);
+        var dateTime = Agenda.this.pointToDateTime(e.getPoint());
+        var event = Agenda.this.events.getOrDefault(dateTime, null);
+
+        if (event == null)
+          Agenda.this.slotClicked.accept(dateTime);
+        else
+          Agenda.this.eventClicked.accept(event);
       }
-
-      return t;
-    }
-
-  private void setupEventListeners() {
-      this.addMouseListener(new MouseAdapter() {
-          @Override
-          public void mouseClicked(MouseEvent e) {
-              super.mouseClicked(e);
-              if (!checkScheduledAgendaClick(e.getPoint())) {
-                  checkUnscheduledAgendaClick(e.getPoint());
-              }
-          }
-      });
-  }
-  
-  private boolean checkScheduledAgendaClick(Point p) {
-      double x0, x1, y0, y1;
-      for (AgendaEvent event : events) {
-          if (!dateInRange(event.getDate())) continue;
-
-          x0 = dayToPixel(event.getDate().getDayOfWeek());
-          y0 = timeToPixel(event.getStart());
-          x1 = dayToPixel(event.getDate().getDayOfWeek()) + dayWidth;
-          y1 = timeToPixel(event.getEnd());
-
-          if (p.getX() >= x0 && p.getX() <= x1 && p.getY() >= y0 && p.getY() <= y1) {
-              fireAgendaScheduledClick(event);
-              return true;
-          }
-      }
-      return false;
-  }
-  
-  private boolean checkUnscheduledAgendaClick(Point p) {
-      final double x0 = dayToPixel(this.week.get(0));
-      final double x1 = dayToPixel(this.week.get(this.week.size() - 1)) + dayWidth;
-      final double y0 = timeToPixel(START_TIME);
-      final double y1 = timeToPixel(END_TIME);
-
-      if (p.getX() >= x0 && p.getX() <= x1 && p.getY() >= y0 && p.getY() <= y1) {
-          LocalDate date = getDateFromDay(pixelToDay(p.getX()));
-          fireAgendaUnscheduledClick(LocalDateTime.of(date, pixelToTime(p.getY())));
-          return true;
-      }
-      return false;
-  }
-  
-  public void addAgendaScheduledEventListener(AgendaScheduledEventListener l) {
-      listenerList.add(AgendaScheduledEventListener.class, l);
+    });
   }
 
-  public void removeAgendaScheduledEventListener(AgendaScheduledEventListener l) {
-      listenerList.remove(AgendaScheduledEventListener.class, l);
+
+
+  public void setEventClicked(Consumer<AgendaEvent> eventClicked){
+    if (eventClicked == null)
+      throw new IllegalArgumentException("eventClicked mustn't be null");
+
+    this.eventClicked = eventClicked;
+  }
+  public void setSlotClicked(Consumer<LocalDateTime> slotClicked){
+    if (slotClicked == null)
+      throw new IllegalArgumentException("slotClicked mustn't be null");
+
+    this.slotClicked = slotClicked;
   }
 
-  // Notify all listeners that have registered interest for
-  // notification on this event type.
-  private void fireAgendaScheduledClick(AgendaEvent agendaEvent) {
-      // Guaranteed to return a non-null array
-      Object[] listeners = listenerList.getListenerList();
-      // Process the listeners last to first, notifying
-      // those that are interested in this event
-      AgendaScheduledClickEvent agendaScheduledClickEvent;
-      for (int i = listeners.length - 2; i >= 0; i -= 2) {
-          if (listeners[i] == AgendaScheduledEventListener.class) {
-              agendaScheduledClickEvent = new AgendaScheduledClickEvent(this, agendaEvent);
-              ((AgendaScheduledEventListener) listeners[i + 1]).agendaScheduledClick(agendaScheduledClickEvent);
-          }
-      }
-  }
-  
-  public void addAgendaUnscheduledEventListener(AgendaUnscheduledEventListener l) {
-      listenerList.add(AgendaUnscheduledEventListener.class, l);
+
+  protected LocalDateTime pointToDateTime(Point p) {
+    final LocalDate date = getDateFromDay(pixelToDay(p.getX()));
+    final LocalTime time = pixelToTime(p.getY());
+
+    final var appointmentMinutes = this.appointmentDuration.toMinutes();
+    final var timeMinutes = ChronoUnit.MINUTES.between(this.startTime, time);
+    final var normalizedMinutes = (timeMinutes / appointmentMinutes) * appointmentMinutes;
+
+    return LocalDateTime.of(date, this.startTime.plusMinutes(normalizedMinutes));
   }
 
-  public void removeAgendaUnscheduledEventListener(AgendaUnscheduledEventListener l) {
-      listenerList.remove(AgendaUnscheduledEventListener.class, l);
-  }
-
-  private void fireAgendaUnscheduledClick(LocalDateTime dateTime) {
-      Object[] listeners = listenerList.getListenerList();
-      AgendaUnscheduledClickEvent agendaUnscheduledClickEvent;
-      for (int i = listeners.length - 2; i >= 0; i -= 2) {
-          if (listeners[i] == AgendaUnscheduledEventListener.class) {
-              agendaUnscheduledClickEvent = new AgendaUnscheduledClickEvent(this, dateTime);
-              ((AgendaUnscheduledEventListener) listeners[i + 1]).agendaUnscheduledClick(agendaUnscheduledClickEvent);
-          }
-      }
-  }
-  private void calculateScaleVars() {
+  protected void calculateScaleVars() {
     int width = getWidth();
     int height = getHeight();
 
@@ -209,18 +178,18 @@ public abstract class Agenda extends JComponent {
 
     // Units are pixels per second
     timeScale = (double) (height - HEADER_HEIGHT) / (END_TIME.toSecondOfDay() - START_TIME.toSecondOfDay());
-    dayWidth = (width - TIME_COL_WIDTH) / numDaysToShow();
+    dayWidth = (width - TIME_COL_WIDTH) / this.week.size();
   }
 
-  private double timeToPixel(LocalTime time) {
+  protected double timeToPixel(LocalTime time) {
     return ((time.toSecondOfDay() - START_TIME.toSecondOfDay()) * timeScale) + HEADER_HEIGHT;
   }
   
-  private LocalTime pixelToTime(double y) {
-      return LocalTime.ofSecondOfDay((int) ((y - HEADER_HEIGHT) / timeScale) + START_TIME.toSecondOfDay()).truncatedTo(ChronoUnit.MINUTES);
+  protected LocalTime pixelToTime(double y) {
+    return LocalTime.ofSecondOfDay((int) ((y - HEADER_HEIGHT) / timeScale) + START_TIME.toSecondOfDay()).truncatedTo(ChronoUnit.MINUTES);
   }
   
-  private DayOfWeek pixelToDay(double x) {
+  protected DayOfWeek pixelToDay(double x) {
     for (DayOfWeek day : this.week) {
       var pixel = dayToPixel(day);
       if (x >= pixel && x < pixel + dayWidth)
@@ -229,25 +198,25 @@ public abstract class Agenda extends JComponent {
     return null;
   }
   
-  private void drawDayHeadings() {
+  protected void drawDayHeadings() {
     for (DayOfWeek day : this.week) {
       LocalDate date = this.getDateFromDay(day);
       int x;
 
       String text = day.getDisplayName(TextStyle.SHORT, Locale.getDefault()) + " "
-                  + date.getDayOfMonth() + "/" + date.getMonthValue();
+        + date.getDayOfMonth() + "/" + date.getMonthValue();
 
       x = (int) (
         this.dayToPixel(day) + (this.dayWidth / 2) - (
           FONT_LETTER_PIXEL_WIDTH * text.length() / 2
-        )
-      );
+          )
+        );
 
       g2.drawString(text, x, 20);
     }
   }
 
-  private void drawGrid() {
+  protected void drawGrid() {
     // Save the original colour
     final Color ORIG_COLOUR = g2.getColor();
 
@@ -282,11 +251,8 @@ public abstract class Agenda extends JComponent {
     g2.setColor(ORIG_COLOUR);
   }
 
-  private void drawTodayShade() {
+  protected void drawTodayShade() {
     LocalDate today = LocalDate.now();
-
-    // Check that date range being viewed is current date range
-    if (!dateInRange(today)) return;
 
     final double x = dayToPixel(today.getDayOfWeek());
     final double y = timeToPixel(START_TIME);
@@ -300,28 +266,26 @@ public abstract class Agenda extends JComponent {
     g2.setColor(origColor);
   }
   
-  private void drawWorkHours() {
-      final Color origColor = g2.getColor();
-      for(DayOfWeek wDay: this.workDays) {
-          final double x = dayToPixel(wDay);
-          double y = timeToPixel(this.startTime);
-          final double width = dayWidth;
-          final double height = timeToPixel(this.startTime.plusHours(this.workHours)) - timeToPixel(this.startTime);
+  protected void drawWorkHours() {
+    final Color origColor = g2.getColor();
+    for(DayOfWeek wDay: this.workDays) {
+      final double x = dayToPixel(wDay);
+      double y = timeToPixel(this.startTime);
+      final double width = dayWidth;
+      final double height = timeToPixel(this.startTime.plusHours(this.dayDuration.toHours()))
+                          - timeToPixel(this.startTime);
           
-          Color alphaGray = new Color(250, 250, 250, 90);
-          g2.setColor(alphaGray);
-          g2.fill(new Rectangle2D.Double(x, y, width, height));
+      Color alphaGray = new Color(250, 250, 250, 90);
+      g2.setColor(alphaGray);
+      g2.fill(new Rectangle2D.Double(x, y, width, height));
           
-          }
-      g2.setColor(origColor);
+    }
+    g2.setColor(origColor);
       
   }
 
-  private void drawCurrentTimeLine() {
+  protected void drawCurrentTimeLine() {
     LocalDate today = LocalDate.now();
-
-    // Check that date range being viewed is current date range
-    if (!dateInRange(today)) return;
 
     final double x0 = dayToPixel(today.getDayOfWeek());
     final double x1 = dayToPixel(today.getDayOfWeek()) + dayWidth;
@@ -338,7 +302,7 @@ public abstract class Agenda extends JComponent {
     g2.setStroke(origStroke);
   }
 
-  private void drawTimes() {
+  protected void drawTimes() {
     int y;
     for (LocalTime time = START_TIME; time.compareTo(END_TIME) <= 0; time = time.plusHours(1)) {
       y = (int) timeToPixel(time) + 15;
@@ -346,18 +310,25 @@ public abstract class Agenda extends JComponent {
     }
   }
 
-
-  private void drawEvents() {
+  protected void drawEvents() {
     double x;
     double y0;
 
-    for (AgendaEvent event : events) {
-      if (!dateInRange(event.date)) continue;
+    var periodEvents = this.events.subMap(
+      this.startDate().atStartOfDay(),
+      true,
+      this.endDate().plusDays(1).atStartOfDay(),
+      false
+    );
+    
+    for (AgendaEvent event : periodEvents.values()) {
+      var startTime = event.dateTime.toLocalTime();
+      var endTime = startTime.plus(this.appointmentDuration);
 
-      x = dayToPixel(event.date.getDayOfWeek());
-      y0 = timeToPixel(event.start);
+      x = dayToPixel(event.dateTime.getDayOfWeek());
+      y0 = timeToPixel(startTime);
 
-      Rectangle2D rect = new Rectangle2D.Double(x, y0, dayWidth, (timeToPixel(event.end) - timeToPixel(event.start)));
+      Rectangle2D rect = new Rectangle2D.Double(x, y0, dayWidth, (timeToPixel(endTime) - timeToPixel(startTime)));
       Color origColor = g2.getColor();
       g2.setColor(event.color);
       g2.fill(rect);
@@ -374,7 +345,7 @@ public abstract class Agenda extends JComponent {
       Font newFont = origFont.deriveFont(Font.BOLD, fontSize);
       g2.setFont(newFont);
 
-      g2.drawString(event.start + " - " + event.end, (int) x + 5, (int) y0 + 11);
+      g2.drawString(startTime + " - " + endTime, (int) x + 5, (int) y0 + 11);
 
       // Unbolden
       g2.setFont(origFont.deriveFont(fontSize));
@@ -404,21 +375,21 @@ public abstract class Agenda extends JComponent {
     g2.setColor(Color.black);
 
     drawDayHeadings();
-    drawTodayShade();
     drawGrid();
     drawTimes();
     drawWorkHours();
     drawEvents();
-    drawCurrentTimeLine();
-    
+
+    var today = LocalDate.now();
+    if (!(today.isAfter(this.endDate()) || today.isBefore(this.startDate()))) {
+      drawTodayShade();
+      drawCurrentTimeLine();
+    }
   }
-  
-  
-  
+
   protected double getDayWidth() {
     return dayWidth;
   }
-
 
   public void goToToday() {
     setRangeToToday();
