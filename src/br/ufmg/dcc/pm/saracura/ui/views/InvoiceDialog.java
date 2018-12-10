@@ -42,7 +42,7 @@ public class InvoiceDialog extends JDialog {
     panel.add(new JLabel("Cliente: " + invoice.payer));
     panel.add(new JLabel("------------------------"));
     panel.add(new JLabel("Beneficiário: " + invoice.beneficiary));
-    panel.add(new JLabel("Nlre: " + invoice.nrle));
+    panel.add(new JLabel("Cnpj: " + invoice.nrle));
     panel.add(new JLabel("Data: " + invoice.date.toString()));
     panel.add(new JLabel("Valor: R$" + invoice.value.toString()));
     panel.add(Box.createRigidArea(new Dimension(50, 10)));
