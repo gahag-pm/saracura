@@ -14,6 +14,7 @@ import br.ufmg.dcc.pm.saracura.clinic.Doctor;
 import br.ufmg.dcc.pm.saracura.clinic.Patient;
 import br.ufmg.dcc.pm.saracura.clinic.Specialty;
 import br.ufmg.dcc.pm.saracura.clinic.payment.Invoice;
+import br.ufmg.dcc.pm.saracura.ui.views.InvoiceDialog;
 import br.ufmg.dcc.pm.saracura.ui.views.ListPickDialog;
 
 
@@ -228,6 +229,9 @@ public class AppointmentController implements Controller<Void> {
       "Consulta",
       JOptionPane.INFORMATION_MESSAGE
     );
+
+    InvoiceDialog inv = new InvoiceDialog(null, invoice);
+    inv.setVisible(true);
 
     return null;
   }
