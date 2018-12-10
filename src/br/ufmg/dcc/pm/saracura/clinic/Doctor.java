@@ -62,7 +62,7 @@ public class Doctor implements Schedulable<Doctor, Equipment> {
       throw new IllegalArgumentException("specialties mustn't be null");
 
     if (specialties.isEmpty())
-      throw new IllegalArgumentException("specialties mustn't be null");
+      throw new IllegalArgumentException("specialties mustn't be empty");
 
 
     this.crm = crm;

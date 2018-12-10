@@ -3,6 +3,7 @@ package br.ufmg.dcc.pm.saracura.ui.views;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Window;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,6 +42,8 @@ public class ListPickDialog<T> extends JDialog {
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
 
+  protected ActionListener confirmButtonAction = e -> this.setVisible(false);
+
   protected final JList<String> list = new JList<String>() {{
     setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
   }};
@@ -71,7 +74,7 @@ public class ListPickDialog<T> extends JDialog {
     this.list.setListData(this.items.keySet().stream().sorted().toArray(String[]::new));
     this.list.setSelectedIndex(0);
 
-    this.selectButton.addActionListener(e -> this.setVisible(false));
+    this.selectButton.addActionListener(e -> this.confirmButtonAction.actionPerformed(e));
 
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -107,12 +110,24 @@ public class ListPickDialog<T> extends JDialog {
     super.setVisible(b);
   }
 
+  /**
+   * Set the confirm button's action.
+   * @param action the action, mustn't be null
+   */
+  public void setConfirmAction(ActionListener action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
+    this.confirmButtonAction = action;
+  }
 
   /**
    * Get the selected item. Returns null if the list has no items.
    */
   public T getSelected() {
-    return this.items.get(this.list.getSelectedValue());
+    var selected = this.list.getSelectedValue();
+    return selected == null ? null
+                            : this.items.get(selected);
   }
 
   /**
