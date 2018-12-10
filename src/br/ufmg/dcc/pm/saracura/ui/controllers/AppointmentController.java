@@ -2,8 +2,8 @@ package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import java.awt.Window;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -13,28 +13,36 @@ import br.ufmg.dcc.pm.saracura.clinic.Clinic;
 import br.ufmg.dcc.pm.saracura.clinic.Doctor;
 import br.ufmg.dcc.pm.saracura.clinic.Patient;
 import br.ufmg.dcc.pm.saracura.clinic.Specialty;
-import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
+import br.ufmg.dcc.pm.saracura.clinic.payment.Invoice;
 import br.ufmg.dcc.pm.saracura.ui.views.ListPickDialog;
-import br.ufmg.dcc.pm.saracura.ui.views.WeeklyAgendaDialog;
 
 
 public class AppointmentController implements Controller<Void> {
   protected Clinic clinic;
 
-  protected Controller<LocalDateTime> agendaController;
+  protected Function<Doctor, Controller<LocalDateTime>> agendaControllerFactory;
+  protected BiFunction<Clinic, Patient, Controller<Invoice>> paymentControllerFactory;
 
 
 
-  public AppointmentController(Clinic clinic, Controller<LocalDateTime> agendaController) {
+  public AppointmentController(
+    Clinic clinic,
+    Function<Doctor, Controller<LocalDateTime>> agendaControllerFactory,
+    BiFunction<Clinic, Patient, Controller<Invoice>> paymentControllerFactory
+  ) {
     if (clinic == null)
       throw new IllegalArgumentException("clinic mustn't be null");
 
-    if (agendaController == null)
-      throw new IllegalArgumentException("agendaController mustn't be null");
+    if (agendaControllerFactory == null)
+      throw new IllegalArgumentException("agendaControllerFactory mustn't be null");
+
+    if (paymentControllerFactory == null)
+      throw new IllegalArgumentException("paymentControllerFactory mustn't be null");
 
 
     this.clinic = clinic;
-    this.agendaController = agendaController;
+    this.agendaControllerFactory = agendaControllerFactory;
+    this.paymentControllerFactory = paymentControllerFactory;
   }
 
 
@@ -180,40 +188,6 @@ public class AppointmentController implements Controller<Void> {
     return doctorDialog.getSelected();
   }
 
-  public LocalDateTime selectDateTime(Window parent, Doctor doctor) {
-    final var agenda = doctor.getAgenda();
-
-    final var agendaDialog = new WeeklyAgendaDialog(
-      parent,
-      doctor.name,
-      agenda.view().stream().map(
-        a -> new AgendaEvent(
-          a.time.toLocalDate(),
-          a.time.toLocalTime(),
-          a.time.toLocalTime().plus(agenda.appointmentDuration),
-          "consulta"
-        )
-      ).collect(Collectors.toUnmodifiableList()),
-      agenda.workDays,
-      agenda.startTime,
-      agenda.dayDuration.toHoursPart()
-    );
-    agendaDialog.setVisible(true);
-
-    LocalDateTime selectedDateTime = agendaDialog.getSelectedDateTime();
-
-    if (selectedDateTime == null) // User canceled.
-      return null;
-
-    final var date = selectedDateTime.toLocalDate();
-    final var time = selectedDateTime.toLocalTime();
-    final var appointmentMinutes = agenda.appointmentDuration.toMinutes();
-    final var timeMinutes = ChronoUnit.MINUTES.between(agenda.startTime, time);
-    final var normalizedMinutes = (timeMinutes / appointmentMinutes) * appointmentMinutes;
-
-    return LocalDateTime.of(date, agenda.startTime.plusMinutes(normalizedMinutes));
-  }
-
   public Void execute(Window parent) {
     final var patient = this.selectPatient(parent);
 
@@ -233,16 +207,27 @@ public class AppointmentController implements Controller<Void> {
       return null;
 
 
-    final var dateTime = this.selectDateTime(parent, doctor);
+    final var dateTime = this.agendaControllerFactory.apply(doctor).execute(parent);
 
     if (dateTime == null) // User canceled.
       return null;
 
 
-    // TODO: payment.
+    final var invoice = this.paymentControllerFactory.apply(this.clinic, patient)
+                                                     .execute(parent);
+
+    if (invoice == null) // User canceled / Transfer refused.
+      return null;
 
 
     doctor.getAgenda().scheduleAppointment(dateTime, patient, "consulta");
+
+    JOptionPane.showMessageDialog(
+      parent,
+      "Consulta agendada!",
+      "Consulta",
+      JOptionPane.INFORMATION_MESSAGE
+    );
 
     return null;
   }

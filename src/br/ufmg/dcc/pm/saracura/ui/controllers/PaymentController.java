@@ -50,6 +50,8 @@ public class PaymentController implements Controller<Invoice> {
       return null;
     };
 
+    Invoice result = null;
+
     var paymentPickDialog = new PaymentPickDialog(parent);
     paymentPickDialog.setVisible(true);
 
@@ -65,10 +67,12 @@ public class PaymentController implements Controller<Invoice> {
       if (checkDialog.getDismissed())
         return cancel.get();
 
-      return new Check(this.patient.name, checkDialog.getSelectedDate()).pay(
+      result = new Check(this.patient.name, checkDialog.getSelectedDate()).pay(
         this.clinic,
         checkDialog.getSelectedValue()
       );
+
+      break;
 
 
     case HEALTH_PLAN:
@@ -78,13 +82,15 @@ public class PaymentController implements Controller<Invoice> {
       if (planDialog.getDismissed())
         return cancel.get();
 
-      return new HealthPlan(
+      result = new HealthPlan(
         planDialog.getSelectedName(),
         planDialog.getSelectedRegistration()
       ).pay(
         this.clinic,
         planDialog.getSelectedValue()
       );
+
+      break;
 
 
     case CASH:
@@ -94,7 +100,12 @@ public class PaymentController implements Controller<Invoice> {
       if (cashDialog.getDismissed())
         return cancel.get();
 
-      return new Cash(this.patient.name).pay(this.clinic, cashDialog.getSelectedValue());
+      result = new Cash(this.patient.name).pay(
+        this.clinic,
+        cashDialog.getSelectedValue()
+      );
+
+      break;
 
 
     case CREDIT:
@@ -109,16 +120,29 @@ public class PaymentController implements Controller<Invoice> {
         paymentPickDialog.getSelected() == PaymentMethod.CREDIT ? Credit::new
                                                                 : Debit::new;
 
-      return card.apply(
+      result = card.apply(
         cardDialog.getSelectedName(),
         cardDialog.getSelectedNumber()
       ).pay(
         this.clinic, cardDialog.getSelectedValue()
       );
 
+      break;
+
 
     default:
       throw new RuntimeException(); // This should never happen.
     }
+
+
+    if (result == null)
+      JOptionPane.showMessageDialog(
+        parent,
+        "Pagamento reprovado!",
+        "Pagamento",
+        JOptionPane.ERROR_MESSAGE
+      );
+
+    return result;
   }
 }
