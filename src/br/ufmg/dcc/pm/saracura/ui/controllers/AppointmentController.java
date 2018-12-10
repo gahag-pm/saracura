@@ -230,8 +230,7 @@ public class AppointmentController implements Controller<Void> {
       JOptionPane.INFORMATION_MESSAGE
     );
 
-    InvoiceDialog inv = new InvoiceDialog(null, invoice);
-    inv.setVisible(true);
+    new InvoiceDialog(parent, invoice).setVisible(true);
 
     return null;
   }

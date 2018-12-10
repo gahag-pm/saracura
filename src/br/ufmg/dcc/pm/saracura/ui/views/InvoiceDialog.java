@@ -36,25 +36,19 @@ public class InvoiceDialog extends JDialog {
     super(parent, "Recibo", ModalityType.APPLICATION_MODAL);
 
 
-    JLabel payer = new JLabel("Cliente: " + invoice.payer);
-    JLabel separator = new JLabel("------------------------");
-    JLabel beneficiary = new JLabel("Beneficiário: " + invoice.beneficiary);
-    JLabel nlre = new JLabel("Nlre: " + invoice.nrle);
-    JLabel date = new JLabel("Data: " + invoice.date.toString());
-    JLabel value = new JLabel("Valor: R$" + invoice.value.toString());
-
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
-    panel.add(payer);
-    panel.add(beneficiary);
-    panel.add(nlre);
-    panel.add(date);
-    panel.add(separator);
-    panel.add(value);
+    panel.add(new JLabel("Cliente: " + invoice.payer));
+    panel.add(new JLabel("------------------------"));
+    panel.add(new JLabel("Beneficiário: " + invoice.beneficiary));
+    panel.add(new JLabel("Nlre: " + invoice.nrle));
+    panel.add(new JLabel("Data: " + invoice.date.toString()));
+    panel.add(new JLabel("Valor: R$" + invoice.value.toString()));
     panel.add(Box.createRigidArea(new Dimension(50, 10)));
-
     this.add(panel);
+
+
     this.pack();
     this.setResizable(false);
     this.setLocationRelativeTo(null);
