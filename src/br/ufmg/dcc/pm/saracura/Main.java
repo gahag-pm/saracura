@@ -25,7 +25,7 @@ public class Main {
   public static void main(String[] args) {
     var saracura = new SaraCura() {{
       addPatient(
-        new Patient("130.371.866.90", "gahag")
+        new Patient("130.371.866.90", "gahag", "(31)6669-6969")
       );
       addDoctor(
         new Doctor(

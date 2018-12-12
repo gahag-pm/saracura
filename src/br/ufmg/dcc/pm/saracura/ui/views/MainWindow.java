@@ -44,7 +44,11 @@ public class MainWindow extends JFrame {
     setAlignmentX(Component.CENTER_ALIGNMENT);
   }};
 
-
+  protected JButton exitButton = new JButton("Sair") {{
+      setSize(buttonDimension);
+      setMaximumSize(buttonDimension);
+      setAlignmentX(Component.CENTER_ALIGNMENT);
+    }};
 
   /**
    * Creates a main window.
@@ -65,6 +69,8 @@ public class MainWindow extends JFrame {
     panel.add(this.doctorRegisterButton);
     panel.add(Box.createRigidArea(new Dimension(10,10)));
     panel.add(this.equipmentRegisterButton);
+    panel.add(Box.createRigidArea(new Dimension(10,10)));
+    panel.add(this.exitButton);
     this.add(panel);
 
     this.getRootPane().setDefaultButton(this.scheduleAppointmentButton);
@@ -110,5 +116,12 @@ public class MainWindow extends JFrame {
    */
   public void addEquipmentRegisterAction(Runnable action) {
     this.equipmentRegisterButton.addActionListener(e -> action.run());
+  }
+  
+  /**
+   * Add an action to the exit button.
+   */
+  public void addExitAction(Runnable action) {
+    this.exitButton.addActionListener(e -> action.run());
   }
 }

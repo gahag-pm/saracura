@@ -25,6 +25,7 @@ public class PatientRegisterDialog extends JDialog {
 
   protected final JTextField nameTextField = new JTextField(20);
   protected final JTextField ninTextField = new JTextField(20);
+  protected final JTextField phoneTextField = new JTextField(20);
 
 
   protected final Dimension dButton = new Dimension(250, 75);
@@ -50,12 +51,14 @@ public class PatientRegisterDialog extends JDialog {
     panel.add(nameTextField);
     panel.add(new JLabel("    CPF: "));
     panel.add(ninTextField);
+    panel.add(new JLabel("   TEL.: "));
+    panel.add(phoneTextField);
     panel.add(Box.createRigidArea(new Dimension(340, 5)));
     panel.add(confirmButton);
     this.add(panel);
 
 
-    this.setMinimumSize(new Dimension(340,140));
+    this.setMinimumSize(new Dimension(340,170));
     this.setResizable(false);
     this.setLocationRelativeTo(null);
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -102,6 +105,13 @@ public class PatientRegisterDialog extends JDialog {
    */
   public String getSelectedNin() {
     return ninTextField.getText();
+  }
+  
+  /**
+   * Get the patient's phoneNumber.
+   */
+  public String getSelectedPhoneNumber() {
+    return phoneTextField.getText();
   }
 
   /**

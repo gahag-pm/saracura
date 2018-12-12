@@ -63,6 +63,9 @@ public class MainController implements Controller<Void> {
     this.window.addEquipmentRegisterAction(
       () -> equipmentRegisterController.execute(this.window)
     );
+    this.window.addExitAction(
+      () -> System.exit(0)
+    );
   }
 
 

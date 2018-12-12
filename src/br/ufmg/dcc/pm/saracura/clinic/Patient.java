@@ -10,6 +10,10 @@ public class Patient {
    * The patient's name.
    */
   public final String name;
+  /**
+   * The patient's phoneNumber.
+   */
+  public final String phoneNumber;
 
 
 
@@ -17,16 +21,21 @@ public class Patient {
    * Create a patient.
    * @param nin  the patient's NIN, mustn't be null
    * @param name the patient's name, mustn't be null
+   * @param phoneNumber the patient's phoneNumber, mustn't be null
    */
-  public Patient(String nin, String name) {
+  public Patient(String nin, String name, String phoneNumber) {
     if (nin == null)
       throw new IllegalArgumentException("nin mustn't be null");
 
     if (name == null)
       throw new IllegalArgumentException("name mustn't be null");
+    
+    if (phoneNumber == null)
+        throw new IllegalArgumentException("phone number mustn't be null");
 
 
     this.nin = nin;
     this.name = name;
+    this.phoneNumber = phoneNumber;
   }
 }

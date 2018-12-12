@@ -45,7 +45,16 @@ public class PatientRegisterController implements Controller<Void> {
         );
         return;
       }
-
+      
+      if(dialog.getSelectedPhoneNumber().isEmpty()){
+          JOptionPane.showMessageDialog(
+            dialog,
+            "Insira um número de telefone para contato.",
+            "TELEFONE INVÁLIDO",
+            JOptionPane.WARNING_MESSAGE
+          );
+          return;
+        }
 
       dialog.setVisible(false);
     });
@@ -56,7 +65,7 @@ public class PatientRegisterController implements Controller<Void> {
       return null;
 
 
-    clinic.addPatient(new Patient(dialog.getSelectedNin(), dialog.getSelectedName()));
+    clinic.addPatient(new Patient(dialog.getSelectedNin(), dialog.getSelectedName(), dialog.getSelectedPhoneNumber()));
 
 
     return null;
