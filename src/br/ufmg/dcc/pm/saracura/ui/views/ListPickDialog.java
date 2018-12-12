@@ -79,7 +79,9 @@ public class ListPickDialog<T> extends JDialog {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     panel.setBorder(new EmptyBorder(10, 20, 15, 20));
-    panel.add(new JScrollPane(list));
+    panel.add(new JScrollPane(list, 
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
     panel.add(Box.createRigidArea(new Dimension(10, 15)));
     panel.add(selectButton);
     this.add(panel);
