@@ -106,7 +106,7 @@ public class PatientRegisterDialog extends JDialog {
   public String getSelectedNin() {
     return ninTextField.getText();
   }
-  
+
   /**
    * Get the patient's phoneNumber.
    */

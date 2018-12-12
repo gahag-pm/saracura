@@ -65,7 +65,13 @@ public class PatientRegisterController implements Controller<Void> {
       return null;
 
 
-    clinic.addPatient(new Patient(dialog.getSelectedNin(), dialog.getSelectedName(), dialog.getSelectedPhoneNumber()));
+    clinic.addPatient(
+      new Patient(
+        dialog.getSelectedNin(),
+        dialog.getSelectedName(),
+        dialog.getSelectedPhoneNumber()
+      )
+    );
 
 
     return null;

@@ -35,7 +35,7 @@ public class AgendaController implements Controller<LocalDateTime> {
       parent,
       this.doctor.name,
       agenda.stream()
-            .map(a -> new AgendaEvent(a.time,a.patient.name +", " + a.patient.phoneNumber))
+            .map(a -> new AgendaEvent(a.time,a.patient.name + ", " + a.patient.phoneNumber))
             .collect(
               Collectors.toMap(
                 e -> e.dateTime,

@@ -45,10 +45,12 @@ public class MainWindow extends JFrame {
   }};
 
   protected JButton exitButton = new JButton("Sair") {{
-      setSize(buttonDimension);
-      setMaximumSize(buttonDimension);
-      setAlignmentX(Component.CENTER_ALIGNMENT);
-    }};
+    setSize(buttonDimension);
+    setMaximumSize(buttonDimension);
+    setAlignmentX(Component.CENTER_ALIGNMENT);
+  }};
+
+
 
   /**
    * Creates a main window.
@@ -87,6 +89,9 @@ public class MainWindow extends JFrame {
    * Add an action to the schedule appointment button.
    */
   public void addAppointmentAction(Runnable action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
     this.scheduleAppointmentButton.addActionListener(e -> action.run());
   }
 
@@ -94,6 +99,9 @@ public class MainWindow extends JFrame {
    * Add an action to the schedule exam button.
    */
   public void addExamAction(Runnable action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
     this.scheduleExamButton.addActionListener(e -> action.run());
   }
 
@@ -101,6 +109,9 @@ public class MainWindow extends JFrame {
    * Add an action to the register patient button.
    */
   public void addPatientRegisterAction(Runnable action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
     this.patientRegisterButton.addActionListener(e -> action.run());
   }
 
@@ -108,6 +119,9 @@ public class MainWindow extends JFrame {
    * Add an action to the register doctor button.
    */
   public void addDoctorRegisterAction(Runnable action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
     this.doctorRegisterButton.addActionListener(e -> action.run());
   }
 
@@ -115,6 +129,9 @@ public class MainWindow extends JFrame {
    * Add an action to the register equipment button.
    */
   public void addEquipmentRegisterAction(Runnable action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
     this.equipmentRegisterButton.addActionListener(e -> action.run());
   }
   
@@ -122,6 +139,9 @@ public class MainWindow extends JFrame {
    * Add an action to the exit button.
    */
   public void addExitAction(Runnable action) {
+    if (action == null)
+      throw new IllegalArgumentException("action mustn't be null");
+
     this.exitButton.addActionListener(e -> action.run());
   }
 }

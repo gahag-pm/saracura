@@ -29,9 +29,9 @@ public class Patient {
 
     if (name == null)
       throw new IllegalArgumentException("name mustn't be null");
-    
+
     if (phoneNumber == null)
-        throw new IllegalArgumentException("phone number mustn't be null");
+        throw new IllegalArgumentException("phoneNumber mustn't be null");
 
 
     this.nin = nin;

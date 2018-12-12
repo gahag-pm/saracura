@@ -99,7 +99,9 @@ public class DoctorRegisterDialog extends JDialog {
 
     this.confirmButton.addActionListener(e -> this.confirmButtonAction.actionPerformed(e));
 
-    this.specialtiesList.setListData(specialties.keySet().stream().toArray(String[]::new));
+    this.specialtiesList.setListData(
+      specialties.keySet().stream().sorted().toArray(String[]::new)
+    );
     this.specialtiesList.setSelectedIndex(0);
 
     this.workDaysList.setListData(workDays.keySet().stream().toArray(String[]::new));
