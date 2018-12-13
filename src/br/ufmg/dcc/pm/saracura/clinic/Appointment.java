@@ -97,6 +97,7 @@ public class Appointment<Operator, Cooperator> {
 
 
 
+  @Override
   public boolean equals(Object o) {
     if (o == null || !(o instanceof Agenda))
       return false;
@@ -110,6 +111,7 @@ public class Appointment<Operator, Cooperator> {
         && this.description.equals(obj.description);
   }
 
+  @Override
   public int hashCode() {
     return Objects.hash(
       this.operator,

@@ -19,7 +19,6 @@ public class AgendaEvent {
   /**
    * Create a agenda event.
    * @param dateTime the date and time of the event
-   * @param duration the duration of the event
    * @param text     the description of the event
    * @param color    the color of the event
    */
