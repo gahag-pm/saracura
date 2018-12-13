@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,13 +20,9 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
-import java.util.NavigableMap;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.swing.JComponent;
-
-import br.ufmg.dcc.pm.saracura.util.time.LocalTimeUtil;
 
 
 public abstract class Agenda extends JComponent {
@@ -44,12 +39,8 @@ public abstract class Agenda extends JComponent {
   protected static final int TIME_COL_WIDTH = 100;
 
 
+  protected final Schedule schedule;
   protected final List<DayOfWeek> week;
-  protected final NavigableMap<LocalDateTime, AgendaEvent> events;
-  protected final Set<DayOfWeek> workDays;
-  protected final LocalTime startTime;
-  protected final Duration dayDuration;
-  protected final Duration appointmentDuration;
 
   protected double timeScale;
   protected double dayWidth;
@@ -66,59 +57,19 @@ public abstract class Agenda extends JComponent {
 
 
 
-  public Agenda(
-    List<DayOfWeek> week,
-    NavigableMap<LocalDateTime, AgendaEvent> events,
-    Set<DayOfWeek> workDays,
-    LocalTime startTime,
-    Duration dayDuration,
-    Duration appointmentDuration
-  ) {
+  public Agenda(Schedule schedule, List<DayOfWeek> week) {
+    if (schedule == null)
+      throw new IllegalArgumentException("schedule mustn't be null");
+
     if (week == null)
       throw new IllegalArgumentException("week mustn't be null");
 
     if (week.isEmpty())
       throw new IllegalArgumentException("week mustn't be empty");
 
-    if (events == null)
-      throw new IllegalArgumentException("events mustn't be null");
 
-    if (workDays == null)
-      throw new IllegalArgumentException("workDays mustn't be null");
-
-    if (workDays.isEmpty())
-      throw new IllegalArgumentException("workDays mustn't be empty");
-
-    if (startTime == null)
-      throw new IllegalArgumentException("startTime mustn't be null");
-
-    if (dayDuration == null)
-      throw new IllegalArgumentException("dayDuration mustn't be null");
-
-    if (dayDuration == Duration.ZERO)
-      throw new IllegalArgumentException("dayDuration must'nt be zero");
-
-    if (LocalTimeUtil.checkOverflow(startTime, dayDuration))
-      throw new IllegalArgumentException(
-        "the workday period (startTime + dayDuration) exceeds the day"
-      );
-
-    if (appointmentDuration == null)
-      throw new IllegalArgumentException("appointmentDuration mustn't be null");
-
-    if (appointmentDuration.compareTo(dayDuration) > 0)
-      throw new IllegalArgumentException("appointmentDuration bigger than dayDuration");
-
-    if (appointmentDuration == Duration.ZERO)
-      throw new IllegalArgumentException("appointmentDuration must'nt be zero");
-
-
+    this.schedule = schedule;
     this.week = week;
-    this.events = events;
-    this.workDays = workDays;
-    this.startTime = startTime;
-    this.dayDuration = dayDuration;
-    this.appointmentDuration = appointmentDuration;
     
 
     this.addMouseListener(new MouseAdapter() {
@@ -127,7 +78,7 @@ public abstract class Agenda extends JComponent {
         super.mouseClicked(e);
 
         var dateTime = Agenda.this.pointToDateTime(e.getPoint());
-        var event = Agenda.this.events.getOrDefault(dateTime, null);
+        var event = Agenda.this.schedule.events.getOrDefault(dateTime, null);
 
         if (event == null)
           Agenda.this.slotClicked.accept(dateTime);
@@ -157,11 +108,11 @@ public abstract class Agenda extends JComponent {
     final LocalDate date = getDateFromDay(pixelToDay(p.getX()));
     final LocalTime time = pixelToTime(p.getY());
 
-    final var appointmentMinutes = this.appointmentDuration.toMinutes();
-    final var timeMinutes = ChronoUnit.MINUTES.between(this.startTime, time);
+    final var appointmentMinutes = this.schedule.appointmentDuration.toMinutes();
+    final var timeMinutes = ChronoUnit.MINUTES.between(this.schedule.startTime, time);
     final var normalizedMinutes = (timeMinutes / appointmentMinutes) * appointmentMinutes;
 
-    return LocalDateTime.of(date, this.startTime.plusMinutes(normalizedMinutes));
+    return LocalDateTime.of(date, this.schedule.startTime.plusMinutes(normalizedMinutes));
   }
 
   protected void calculateScaleVars() {
@@ -268,12 +219,12 @@ public abstract class Agenda extends JComponent {
   
   protected void drawWorkHours() {
     final Color origColor = g2.getColor();
-    for(DayOfWeek wDay: this.workDays) {
+    for(DayOfWeek wDay: this.schedule.workDays) {
       final double x = dayToPixel(wDay);
-      double y = timeToPixel(this.startTime);
+      double y = timeToPixel(this.schedule.startTime);
       final double width = dayWidth;
-      final double height = timeToPixel(this.startTime.plusHours(this.dayDuration.toHours()))
-                          - timeToPixel(this.startTime);
+      final double height = timeToPixel(this.schedule.startTime.plusHours(this.schedule.dayDuration.toHours()))
+                          - timeToPixel(this.schedule.startTime);
           
       Color alphaGray = new Color(250, 250, 250, 90);
       g2.setColor(alphaGray);
@@ -314,7 +265,7 @@ public abstract class Agenda extends JComponent {
     double x;
     double y0;
 
-    var periodEvents = this.events.subMap(
+    var periodEvents = this.schedule.events.subMap(
       this.startDate().atStartOfDay(),
       true,
       this.endDate().plusDays(1).atStartOfDay(),
@@ -323,7 +274,7 @@ public abstract class Agenda extends JComponent {
     
     for (AgendaEvent event : periodEvents.values()) {
       var startTime = event.dateTime.toLocalTime();
-      var endTime = startTime.plus(this.appointmentDuration);
+      var endTime = startTime.plus(this.schedule.appointmentDuration);
 
       x = dayToPixel(event.dateTime.getDayOfWeek());
       y0 = timeToPixel(startTime);

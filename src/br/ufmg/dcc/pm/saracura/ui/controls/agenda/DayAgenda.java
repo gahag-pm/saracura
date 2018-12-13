@@ -1,13 +1,8 @@
 package br.ufmg.dcc.pm.saracura.ui.controls.agenda;
 
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.NavigableMap;
-import java.util.Set;
 
 
 public class DayAgenda extends Agenda {
@@ -15,20 +10,10 @@ public class DayAgenda extends Agenda {
 
 
 
-  public DayAgenda(
-    NavigableMap<LocalDateTime, AgendaEvent> events,
-    Set<DayOfWeek> workDays,
-    LocalTime startTime,
-    Duration dayDuration,
-    Duration appointmentDuration
-  ) {
+  public DayAgenda(Schedule schedule) {
     super(
-      List.of(LocalDate.now().getDayOfWeek()),
-      events,
-      workDays,
-      startTime,
-      dayDuration,
-      appointmentDuration
+      schedule,
+      List.of(LocalDate.now().getDayOfWeek())
     );
 
     this.date = LocalDate.now();

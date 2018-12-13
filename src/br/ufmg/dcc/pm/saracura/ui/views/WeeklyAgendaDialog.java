@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
+import br.ufmg.dcc.pm.saracura.ui.controls.agenda.Schedule;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.WeekAgenda;
 
 
@@ -29,25 +30,11 @@ public class WeeklyAgendaDialog extends JDialog {
 
 
 
-  public WeeklyAgendaDialog(
-    Window parent,
-    String owner,
-    NavigableMap<LocalDateTime, AgendaEvent> events,
-    Set<DayOfWeek> workDays,
-    LocalTime startTime,
-    Duration dayDuration,
-    Duration appointmentDuration
-  ) {
+  public WeeklyAgendaDialog(Window parent, String owner, Schedule schedule) {
     super(parent, "Agenda semanal de " + owner, ModalityType.APPLICATION_MODAL);
 
 
-    var agenda = new WeekAgenda(
-      events,
-      workDays,
-      startTime,
-      dayDuration,
-      appointmentDuration
-    );
+    var agenda = new WeekAgenda(schedule);
     agenda.setSlotClicked(dt -> {
       this.selectedDateTime = dt;
       this.slotClicked.accept(dt);

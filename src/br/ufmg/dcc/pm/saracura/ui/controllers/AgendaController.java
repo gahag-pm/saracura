@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import br.ufmg.dcc.pm.saracura.clinic.Doctor;
 import br.ufmg.dcc.pm.saracura.ui.controls.agenda.AgendaEvent;
+import br.ufmg.dcc.pm.saracura.ui.controls.agenda.Schedule;
 import br.ufmg.dcc.pm.saracura.ui.views.WeeklyAgendaDialog;
 
 
@@ -34,20 +35,27 @@ public class AgendaController implements Controller<LocalDateTime> {
     final var agendaDialog = new WeeklyAgendaDialog(
       parent,
       this.doctor.name,
-      agenda.stream()
-            .map(a -> new AgendaEvent(a.time,a.patient.name + ", " + a.patient.phoneNumber))
-            .collect(
-              Collectors.toMap(
-                e -> e.dateTime,
-                Function.identity(),
-                (v1,v2) ->{ throw new RuntimeException(); }, // This should never happen.
-                TreeMap::new
+      new Schedule(
+        agenda.stream()
+              .map( // Appointment -> AgendaEvent
+                a -> new AgendaEvent(
+                  a.time,
+                  a.patient.name + ", " + a.patient.phoneNumber
+                )
               )
-            ),
-      agenda.workDays,
-      agenda.startTime,
-      agenda.dayDuration,
-      agenda.appointmentDuration
+              .collect( // Collect as a NavigableMap<LocalDateTime, AgendaEvent>.
+                Collectors.toMap(
+                  e -> e.dateTime,
+                  Function.identity(),
+                  (v1,v2) -> { throw new RuntimeException(); }, // This should never happen.
+                  TreeMap::new
+                )
+              ),
+        agenda.workDays,
+        agenda.startTime,
+        agenda.dayDuration,
+        agenda.appointmentDuration
+      )
     );
 
     agendaDialog.setSlotClicked(dt -> {
