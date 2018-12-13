@@ -43,13 +43,16 @@ public class Main {
 
     var mainWindow = new MainWindow();
 
-    var examAgendaController = new ExamAgendaController();
     var appointmentController = new AppointmentController(
       saracura,
       AgendaController::new,
       PaymentController::new
     );
-    var examController = new ExamController(saracura, examAgendaController);
+    var examController = new ExamController(
+      saracura,
+      ExamAgendaController::new,
+      PaymentController::new
+    );
     var patientRegisterController = new PatientRegisterController(saracura);
     var doctorRegisterController = new DoctorRegisterController(saracura);
     var equipmentRegisterController = new EquipmentRegisterController(saracura);

@@ -1,37 +1,50 @@
 package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import java.awt.Window;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 
 import br.ufmg.dcc.pm.saracura.clinic.Clinic;
+import br.ufmg.dcc.pm.saracura.clinic.Equipment;
 import br.ufmg.dcc.pm.saracura.clinic.Exam;
 import br.ufmg.dcc.pm.saracura.clinic.Patient;
 import br.ufmg.dcc.pm.saracura.clinic.Specialty;
+import br.ufmg.dcc.pm.saracura.clinic.payment.Invoice;
 import br.ufmg.dcc.pm.saracura.ui.views.ListPickDialog;
+import br.ufmg.dcc.pm.saracura.util.Tuple;
 
 
 public class ExamController implements Controller<Void> {
   protected Clinic clinic;
 
-  protected final Controller<Void> examAgendaController;
+  protected Function<Equipment, Controller<Tuple<Equipment, LocalDateTime>>> examAgendaControllerFactory;
+  protected BiFunction<Clinic, Patient, Controller<Invoice>> paymentControllerFactory;
 
 
 
-  public ExamController(Clinic clinic, Controller<Void> examAgendaController) {
+  public ExamController(
+    Clinic clinic,
+    Function<Equipment, Controller<Tuple<Equipment, LocalDateTime>>> examAgendaControllerFactory,
+    BiFunction<Clinic, Patient, Controller<Invoice>> paymentControllerFactory
+  ) {
     if (clinic == null)
       throw new IllegalArgumentException("clinic mustn't be null");
 
+    if (examAgendaControllerFactory == null)
+      throw new IllegalArgumentException("examAgendaControllerFactory mustn't be null");
 
-    if (examAgendaController == null)
-      throw new IllegalArgumentException("examAgendaController mustn't be null");
+    if (paymentControllerFactory == null)
+      throw new IllegalArgumentException("paymentControllerFactory mustn't be null");
 
 
     this.clinic = clinic;
-    this.examAgendaController = examAgendaController;
+    this.examAgendaControllerFactory = examAgendaControllerFactory;
+    this.paymentControllerFactory = paymentControllerFactory;
   }
 
 
@@ -139,7 +152,9 @@ public class ExamController implements Controller<Void> {
     final var radiologists =
       this.clinic.getDoctors().stream()
                               .filter( 
-                                d -> d.specialties.contains(Specialty.RADIOLOGY_AND_DIAGNOSTIC_IMAGING)
+                                d -> d.specialties.contains(
+                                  Specialty.RADIOLOGY_AND_DIAGNOSTIC_IMAGING
+                                )
                               )
                               .collect(Collectors.toUnmodifiableList());
 
