@@ -2,6 +2,7 @@ package br.ufmg.dcc.pm.saracura.ui.controllers;
 
 import java.awt.Window;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -10,26 +11,36 @@ import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 
 import br.ufmg.dcc.pm.saracura.clinic.Clinic;
+import br.ufmg.dcc.pm.saracura.clinic.Doctor;
 import br.ufmg.dcc.pm.saracura.clinic.Equipment;
 import br.ufmg.dcc.pm.saracura.clinic.Exam;
 import br.ufmg.dcc.pm.saracura.clinic.Patient;
 import br.ufmg.dcc.pm.saracura.clinic.Specialty;
 import br.ufmg.dcc.pm.saracura.clinic.payment.Invoice;
+import br.ufmg.dcc.pm.saracura.ui.views.InvoiceDialog;
 import br.ufmg.dcc.pm.saracura.ui.views.ListPickDialog;
-import br.ufmg.dcc.pm.saracura.util.Tuple;
+import br.ufmg.dcc.pm.saracura.util.Triple;
 
 
 public class ExamController implements Controller<Void> {
   protected Clinic clinic;
 
-  protected Function<Equipment, Controller<Tuple<Equipment, LocalDateTime>>> examAgendaControllerFactory;
+  protected BiFunction<
+    Collection<Equipment>,
+    Collection<Doctor>,
+    Controller<Triple<Equipment, Doctor, LocalDateTime>>
+  > examAgendaControllerFactory;
   protected BiFunction<Clinic, Patient, Controller<Invoice>> paymentControllerFactory;
 
 
 
   public ExamController(
     Clinic clinic,
-    Function<Equipment, Controller<Tuple<Equipment, LocalDateTime>>> examAgendaControllerFactory,
+    BiFunction<
+      Collection<Equipment>,
+      Collection<Doctor>,
+      Controller<Triple<Equipment, Doctor, LocalDateTime>>
+    > examAgendaControllerFactory,
     BiFunction<Clinic, Patient, Controller<Invoice>> paymentControllerFactory
   ) {
     if (clinic == null)
@@ -168,17 +179,52 @@ public class ExamController implements Controller<Void> {
       return null;
     }
 
+
     final var patient = this.selectPatient(parent);
 
     if (patient == null) // User canceled.
       return null;
+
 
     final var exam = this.selectExam(parent);
 
     if (exam == null) // User canceled.
       return null;
 
-    // TODO.
+
+    final Triple<Equipment, Doctor, LocalDateTime> appointment =
+      this.examAgendaControllerFactory.apply(
+        this.clinic.getEquipments().stream()
+                                   .filter(e -> e.exam == exam)
+                                   .collect(Collectors.toUnmodifiableList()),
+        radiologists
+      ).execute(parent);
+
+    if (appointment == null) // User canceled.
+      return null;
+
+
+    final var invoice = this.paymentControllerFactory.apply(this.clinic, patient)
+                                                     .execute(parent);
+
+    if (invoice == null) // User canceled / Transfer refused.
+      return null;
+
+
+    var equipment   = appointment.first;
+    var radiologist = appointment.second;
+    var dateTime    = appointment.third;
+
+    equipment.getAgenda().scheduleAppointment(dateTime, patient, radiologist, "exame");
+
+    JOptionPane.showMessageDialog(
+      parent,
+      "Consulta agendada!",
+      "Consulta",
+      JOptionPane.INFORMATION_MESSAGE
+    );
+
+    new InvoiceDialog(parent, invoice).setVisible(true);
 
     return null;
   }
